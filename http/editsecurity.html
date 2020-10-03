@@ -1,0 +1,46 @@
+{{template "header.html" .}}
+	<body>
+		{{template "headMenu.html" .}}
+		<div id="BodyContent">
+			{{template "librarymenu.html" .}}
+			<div id="MainContentContainer">
+				{{if .PagePermissions}}
+				<h2>Current Permissions</h2>
+				{{$CSRF := .CSRF}}
+				<table>
+					<tr>
+						<th>Name</th>
+						<th>Permissions</th>
+						<th>Remove Permission</th>
+					</tr>
+					{{range .PagePermissions}}
+					<tr>
+						<td>{{.User.Name}}</td>
+						<td>{{.Access.String}}</td>
+						<td>
+							<form method="POST" id="EditSecurityForm" action="./security/delete">
+								{{$CSRF}}
+								<input type="hidden" name="AccessID" value="{{.ID}}">
+								<input type="submit" value="Remove">
+							</form>
+						</td>
+					</tr>
+					{{end}}					
+				</table>
+				{{end}}
+				<h2>Add/Edit Permissions</h2>
+				<form method="POST" id="EditSecurityForm" action="./security/add">
+					{{.CSRF}}
+					<input type="text" name="UserName" placeholder="Enter a username" value="" required>
+					<label>Deny</label><input type="checkbox" name="Deny" value="checked"/><br>
+					<label>Read</label><input type="checkbox" name="Read" value="checked"/><br>
+					<label>Write</label><input type="checkbox" name="Write" value="checked"/><br>
+					<label>Delete</label><input type="checkbox" name="Delete" value="checked"/><br>
+					<label>Audit</label><input type="checkbox" name="Audit" value="checked"/><br>
+					<label>Moderate</label><input type="checkbox" name="Moderate" value="checked"/><br>
+					<label>Inherit Down</label><input type="checkbox" name="Inherits" value="checked"/><br>
+					<input type="submit" value="Update">
+				</form>
+			</div>
+		</div>
+{{template "footer.html" .}}

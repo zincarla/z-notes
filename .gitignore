@@ -1,0 +1,12 @@
+configuration/*
+configuration\*
+pages/*
+pages\*
+*.exe
+files\*
+files/*
+.vscode
+znotes
+.vs
+z-notes
+debug.log

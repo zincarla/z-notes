@@ -1,0 +1,34 @@
+		<div id="messageContainer" class="display{{if .HTMLMessage}}Block{{else}}Hidden{{end}}">
+			{{if .HTMLMessage}}{{.HTMLMessage}}<br>{{end}}
+			<a href="javascript:ToggleDIVDisplay('messageContainer');">Click here</a> to close this message.
+		</div>
+		<div id="CellMenuButton" onclick="ToggleCellDIVDisplay('HeadMenu'); ToggleCellDIVDisplay('SideMenu');">&#9776;</div>
+		<div id="HeadMenu" class="cellDefaultHidden">
+			<ul>
+				<li><a href="/">Home</a></li>
+				{{if ne .UserInformation.DBID 0}}
+				{{if ne .PageData.ID 0}}
+				<li>Note
+					<div class="dropDownContent">
+						<ul>
+							<li>
+								<a href="/page/{{.PageData.ID}}/view">View</a>
+							</li>
+							<li>
+								<a href="/page/{{.PageData.ID}}/edit">Edit</a>
+							</li>
+							<li>
+								<a href="/page/{{.PageData.ID}}/file">Files</a>
+							</li>
+							<li>
+								<a href="/page/{{.PageData.ID}}/security">Security</a>
+							</li>
+						</ul>
+					</div>
+				</li>
+				{{end}}
+				<li>Profile<div class="dropDownContent"><a href="/openidc/logout">Logout</a></div></li>
+				{{end}}
+				<li><a href="/about/about.html">About</li></a>
+			</ul>
+		</div>

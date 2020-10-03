@@ -1,0 +1,15 @@
+{{template "header.html" .}}
+	<body>
+		{{template "headMenu.html" .}}
+		<div id="BodyContent">
+			{{template "librarymenu.html" .}}
+			<div id="MainContentContainer">
+				<form method="POST" id="EditPageForm">
+					{{.CSRF}}
+					<input type="text" name="PageName" value="{{.PageData.Name}}">
+					<textarea name="PageContent">{{.PageData.Content}}</textarea>
+					<input type="submit" value="Update">
+				</form>
+			</div>
+		</div>
+{{template "footer.html" .}}

@@ -1,0 +1,22 @@
+{{template "header.html" .}}
+	<body>
+		{{template "headMenu.html" .}}
+		<div id="BodyContent">
+			{{template "librarymenu.html" .}}
+			<div id="MainContentContainer">
+				<div id="WelcomeContainer">
+					<img alt="Logo" src="/resources/logo.png" />
+					{{if .IsLoggedOn}}
+					Welcome {{.UserInformation.GetDiscriminateName}}!<br><br>
+					Use the menu on the left to view your notes or enter a search term and we will help you find a note you already made. Alternatively, click "Create Note" to start a new note.<br><br>
+					<form id="searchForm" action="/search" method="get">
+						<input type="text" name="Search" placeholder="Search...">
+					</form>
+					{{else}}
+					This service allows you to create, save and share notes. To get started, click Sign-In below.<br>
+					<a href="/openidc/logon">Sign-In</a>
+					{{end}}
+				</div>
+			</div>
+		</div>
+{{template "footer.html" .}}

@@ -1,0 +1,10 @@
+{{template "header.html" .}}
+	<body>
+		{{template "headMenu.html" .}}
+		<div id="BodyContent">
+			{{template "librarymenu.html" .}}
+			<div id="MainContentContainer">
+				{{.PageContent}}
+			</div>
+		</div>
+{{template "footer.html" .}}

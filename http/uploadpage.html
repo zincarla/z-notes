@@ -1,0 +1,26 @@
+{{template "header.html" .}}
+	<body>
+		{{template "headMenu.html" .}}
+		<div id="BodyContent">
+			{{template "librarymenu.html" .}}
+			<div id="MainContentContainer">
+				<form method="POST" enctype="multipart/form-data" action="./file/upload" id="UploadPageForm">
+					{{.CSRF}}
+					<label>File(s)</label><input type="file" name="Files" multiple="multiple"/><br>
+					Add to page content? <input type="checkbox" name="AutoAddFile" value="checked"/><br>
+					<input type="submit" value="Upload">
+				</form>
+				<form method="POST"  enctype="multipart/form-data" action="./file/delete" id="UploadPageForm">
+					{{.CSRF}}
+					<label>File</label>
+					<select name="File">
+						{{range .PageResources}}
+						<option value="{{.}}">{{.}}</option>
+						{{end}}
+					</select>
+					<br>
+					<input type="submit" value="Delete">
+				</form>
+			</div>
+		</div>
+{{template "footer.html" .}}

@@ -1,0 +1,19 @@
+{{template "header.html" .}}
+	<body>
+		{{template "headMenu.html" .}}
+		<div id="BodyContent">
+			{{template "librarymenu.html" .}}
+			<div id="MainContentContainer">
+				<h2>Search Results</h2>
+				{{if .SearchResults}}
+				<ul>
+					{{range .SearchResults}}
+					<a href="/page/{{.ID}}/view"><li  class="pageMenuOption">{{.Name}}</li></a>
+					{{end}}
+				</ul>
+				{{else}}
+					No results found.
+				{{end}}
+			</div>
+		</div>
+{{template "footer.html" .}}

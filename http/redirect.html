@@ -1,0 +1,10 @@
+{{template "header.html" .}}
+	<body>
+		{{template "headMenu.html" .}}
+		<div id="BodyContent">
+			{{template "librarymenu.html" .}}
+			<div id="MainContentContainer">
+				{{if ne .RedirectLink ""}}<div class="card"><h1>Warning</h1> You are leaving this site. Ensure you are not about to go somewhere malicious. If you are sure you want to continue, click the link below<br> <a href="{{.RedirectLink}}">{{.RedirectLink}}</a></div>{{else}}You should only reach this page when you click on an external link, we are not sure where you intended to go. Please click back and try again.{{end}}
+			</div>
+		</div>
+{{template "footer.html" .}}
