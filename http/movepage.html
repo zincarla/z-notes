@@ -1,0 +1,28 @@
+{{template "header.html" .}}
+	<body>
+		{{template "headMenu.html" .}}
+		<div id="BodyContent">
+			{{template "librarymenu.html" .}}
+			<div id="MainContentContainer">
+				<form method="POST" id="MovePageForm">
+					{{.CSRF}}
+					<p>Move "{{.PageData.Name}}" to "{{.MovingParentPageData.Name}}"?</p>
+					<div id="LibraryNavigation">
+						<ul>
+							{{$MovingID := .PageData.ID}}
+							{{if ne .MovingParentPageData.ID 0}}
+							<a href="/page/{{.PageData.ID}}/move?ParentPageID={{.MovingParentPageData.PrevID}}"><li>Back..</li></a>
+							{{end}}
+							{{range .SearchResults}}
+							{{if ne $MovingID .ID}}
+							<a href="/page/{{$MovingID}}/move?ParentPageID={{.ID}}"><li class="pageMenuOption">{{.Name}}</li></a>
+							{{end}}
+							{{end}}
+						</ul>
+					</div>
+					<input type="hidden" value="{{.MovingParentPageData.ID}}" name="ParentPageID">
+					<input type="submit" value="Move">
+				</form>
+			</div>
+		</div>
+{{template "footer.html" .}}

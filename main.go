@@ -135,6 +135,8 @@ func main() {
 		requestRouter.HandleFunc("/page/{pageID}/security", routers.SecurityPageGetRouter).Methods("GET")
 		requestRouter.HandleFunc("/page/{pageID}/security/add", routers.SecurityPagePostRouter).Methods("POST")
 		requestRouter.HandleFunc("/page/{pageID}/security/delete", routers.SecurityPageDeletePostRouter).Methods("POST")
+		requestRouter.HandleFunc("/page/{pageID}/move", routers.MovePageGetRouter).Methods("GET")
+		requestRouter.HandleFunc("/page/{pageID}/move", routers.MovePagePostRouter).Methods("POST")
 		//requestRouter.HandleFunc("/mod", routers.ModRouter)
 		//requestRouter.HandleFunc("/mod/user", routers.ModUserRouter)
 

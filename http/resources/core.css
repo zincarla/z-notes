@@ -134,7 +134,6 @@ ul {
 	padding: 4px;
 	border-bottom: darkgray 1px solid;
 }
-
 #SideMenu a {
 	color: unset;
 	text-decoration: none;
@@ -151,6 +150,21 @@ ul {
 }
 .specialSideMenuli {
 	background-color: rgb(185, 185, 185);
+}
+
+#LibraryNavigation {
+	border-radius: 0px 10px 0px 0px;
+	background-color: lightgray;
+
+}
+
+#LibraryNavigation li:hover {
+	background-color: lightslategray;
+}
+
+#LibraryNavigation a {
+	color: unset;
+	text-decoration: none;
 }
 
 /*Create page menu option*/

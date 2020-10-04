@@ -14,7 +14,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-//PageRouter serves requests to /page/{pageID}
+//PageRouter serves requests to /page/{pageID}/view
 func PageRouter(responseWriter http.ResponseWriter, request *http.Request) {
 	TemplateInput := getNewTemplateInput(responseWriter, request)
 	urlVariables := mux.Vars(request)
@@ -64,6 +64,7 @@ func PageRouter(responseWriter http.ResponseWriter, request *http.Request) {
 		redirectWithFlash(responseWriter, request, "/", "Page requested could not be found", "pageError")
 		return
 	}
+
 	//Parse content into HTML
 	TemplateInput.Title = pageData.Name
 	TemplateInput.PageData = pageData
@@ -83,6 +84,15 @@ func PageRouter(responseWriter http.ResponseWriter, request *http.Request) {
 	} else {
 		TemplateInput.ChildPages = children
 	}
+	//Grab ParentPageData for menu in template
+	TemplateInput.ParentPageData = interfaces.Page{Name: "Library Root", OwnerID: TemplateInput.UserInformation.DBID}
+	if pageData.PrevID != 0 {
+		TemplateInput.ParentPageData, err = database.DBInterface.GetPage(pageData.PrevID)
+		if err != nil {
+			logging.WriteLog(logging.LogLevelError, "pagerouter/PageRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Failed to parse get parent page from database", err.Error()})
+		}
+	}
+
 	//Send in template
 	replyWithTemplate("page.html", TemplateInput, responseWriter, request)
 }

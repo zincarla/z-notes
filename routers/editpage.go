@@ -71,6 +71,14 @@ func EditPageGetRouter(responseWriter http.ResponseWriter, request *http.Request
 	} else {
 		TemplateInput.ChildPages = children
 	}
+	//Grab ParentPageData for menu in template
+	TemplateInput.ParentPageData = interfaces.Page{Name: "Library Root", OwnerID: TemplateInput.UserInformation.DBID}
+	if pageData.PrevID != 0 {
+		TemplateInput.ParentPageData, err = database.DBInterface.GetPage(pageData.PrevID)
+		if err != nil {
+			logging.WriteLog(logging.LogLevelError, "pagerouter/PageRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Failed to parse get parent page from database", err.Error()})
+		}
+	}
 
 	//Reply with edit form
 	replyWithTemplate("editpage.html", TemplateInput, responseWriter, request)

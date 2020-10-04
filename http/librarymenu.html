@@ -7,9 +7,9 @@
 					</li>
 					{{if ne .PageData.ID 0}}
 					{{if ne .PageData.PrevID 0}}
-					<a href="/page/{{.PageData.PrevID}}/view"><li class="backPageMenuOption specialSideMenuli">Back..</li></a>
+					<a href="/page/{{.PageData.PrevID}}/view"><li class="backPageMenuOption specialSideMenuli">&lt;- {{.ParentPageData.Name}}</li></a>
 					{{else}}
-					<a href="/"><li class="backPageMenuOption specialSideMenuli">Back..</li></a>
+					<a href="/"><li class="backPageMenuOption specialSideMenuli">&lt;- Library Root</li></a>
 					{{end}}
 					{{else}}
 					<li class="backPageSpacer specialSideMenuli">&nbsp;</li>

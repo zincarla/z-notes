@@ -19,6 +19,8 @@ type templateInput struct {
 	HTMLMessage           template.HTML
 	PageContent           template.HTML
 	PageData              interfaces.Page
+	ParentPageData        interfaces.Page
+	MovingParentPageData  interfaces.Page
 	ChildPages            []interfaces.Page
 	SearchResults         []interfaces.Page
 	AllowAccountCreation  bool
