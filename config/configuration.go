@@ -115,10 +115,12 @@ func SaveConfiguration(Path string) error {
 
 //CreateSessionStore will create a new key store given a byte slice. If the slice is nil, a random key will be used.
 func CreateSessionStore() {
-	if Configuration.SessionStoreKey == nil || len(Configuration.SessionStoreKey) == 0 {
+	if Configuration.SessionStoreKey == nil || len(Configuration.SessionStoreKey) < 2 {
+		Configuration.SessionStoreKey = [][]byte{securecookie.GenerateRandomKey(64), securecookie.GenerateRandomKey(32)}
+	} else if len(Configuration.SessionStoreKey[0]) != 64 || len(Configuration.SessionStoreKey[0]) != 32 {
 		Configuration.SessionStoreKey = [][]byte{securecookie.GenerateRandomKey(64), securecookie.GenerateRandomKey(32)}
 	}
-	if Configuration.CSRFKey == nil || len(Configuration.CSRFKey) == 0 {
+	if Configuration.CSRFKey == nil || len(Configuration.CSRFKey) != 32 {
 		Configuration.CSRFKey = securecookie.GenerateRandomKey(32)
 	}
 	SessionStore = sessions.NewCookieStore(Configuration.SessionStoreKey...)
