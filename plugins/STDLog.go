@@ -2,6 +2,7 @@ package plugins
 
 import (
 	"log"
+	"strconv"
 	"time"
 )
 
@@ -11,7 +12,7 @@ type STDLog struct {
 
 //WriteLog writes the requested log entry to console
 func (SLog STDLog) WriteLog(logLevel int64, logSource string, user string, result string, details []string) {
-	fullLine := time.Now().Format(time.UnixDate) + " - " + logSource + " - " + user + " - " + result + " - "
+	fullLine := time.Now().Format(time.UnixDate) + " - " + strconv.FormatInt(logLevel, 10) + " - " + logSource + " - " + user + " - " + result + " - "
 	for _, detail := range details {
 		fullLine = fullLine + detail + "; "
 	}
@@ -21,5 +22,5 @@ func (SLog STDLog) WriteLog(logLevel int64, logSource string, user string, resul
 
 //GetVersionInformation returns the version and name of this plugin
 func (SLog STDLog) GetVersionInformation() string {
-	return "STDLog Version 1.0.1.0"
+	return "STDLog Version 1.0.1.1"
 }
