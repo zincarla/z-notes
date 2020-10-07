@@ -61,6 +61,10 @@ type ConfigurationSettings struct {
 	OpenIDLogonExpireTime int64
 	//TargetLogLevel increase or decrease log verbosity
 	TargetLogLevel int64
+	//LoggingWhiteList regex based white-list for logging
+	LoggingWhiteList string
+	//LoggingWhiteList regex based white-list for logging
+	LoggingBlackList string
 	//MaxQueryResults is how many results to return for a page search, defaults to 20
 	MaxQueryResults uint64
 }

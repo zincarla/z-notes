@@ -23,7 +23,7 @@ func main() {
 	//Load succeeded
 	configConfirmed := false
 	//Init plugins
-	logging.LogInterface = plugins.STDLog{}
+	logging.LogInterface = &plugins.STDLog{}
 	//Load Configuration
 	configPath := "." + string(filepath.Separator) + "configuration" + string(filepath.Separator) + "config.json"
 	err := config.LoadConfiguration(configPath)
@@ -34,6 +34,9 @@ func main() {
 
 	//Add any missing configs
 	fixMissingConfigs()
+
+	//Init logging
+	logging.LogInterface.Init(config.Configuration.TargetLogLevel, config.Configuration.LoggingWhiteList, config.Configuration.LoggingBlackList)
 
 	//Resave config file
 	config.SaveConfiguration(configPath)
