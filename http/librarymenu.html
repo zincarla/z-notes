@@ -1,19 +1,10 @@
 			<div id="SideMenu" class="cellDefaultHidden">
 				<ul>
-					<li class="backPageSpacer">
+					<li class="sideSearchForm">
 						<form id="searchForm" action="/search" method="get">
 							<input type="text" name="Search" placeholder="Search...">
 						</form>
 					</li>
-					{{if ne .PageData.ID 0}}
-					{{if ne .PageData.PrevID 0}}
-					<a href="/page/{{.PageData.PrevID}}/view"><li class="backPageMenuOption specialSideMenuli">&lt;- {{.ParentPageData.Name}}</li></a>
-					{{else}}
-					<a href="/"><li class="backPageMenuOption specialSideMenuli">&lt;- Library Root</li></a>
-					{{end}}
-					{{else}}
-					<li class="backPageSpacer specialSideMenuli">&nbsp;</li>
-					{{end}}
 					{{if .IsLoggedOn}}
 					<li class="createPageMenuOption specialSideMenuli">Create Note +
 						<form method="POST" action="/createpage">
@@ -24,8 +15,17 @@
 						</form>
 					</li>
 					{{end}}
+					{{if ne .PageData.ID 0}}
+					{{if ne .PageData.PrevID 0}}
+					<a href="/page/{{.PageData.PrevID}}/view"><li class="backPageMenuOption specialSideMenuli">&lt;- {{.ParentPageData.Name}}</li></a>
+					{{else}}
+					<a href="/"><li class="backPageMenuOption specialSideMenuli">&lt;- Library Root</li></a>
+					{{end}}
+					{{else}}
+					<li class="backPageSpacer specialSideMenuli">&lt;- Library Root</li>
+					{{end}}
 				</ul>
-				<ul>
+				<ul id="naviMenu">
 					{{range .ChildPages}}
 					<a href="/page/{{.ID}}/view"><li  class="pageMenuOption">{{.Name}}</li></a>
 					{{end}}

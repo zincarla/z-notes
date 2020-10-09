@@ -144,8 +144,13 @@ ul {
 #SideMenu li.backPageSpacer {
 	border: unset;
 	background-color: rgb(185, 185, 185);
+	color: rgb(145, 145, 145);
 }
 #SideMenu li.backPageSpacer:hover {
+	background-color: rgb(185, 185, 185);
+	color: rgb(145, 145, 145);
+}
+.sideSearchForm {
 	background-color: rgb(185, 185, 185);
 }
 .specialSideMenuli {
