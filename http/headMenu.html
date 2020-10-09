@@ -34,4 +34,10 @@
 				{{end}}
 				<li><a href="/about/about.html">About</li></a>
 			</ul>
+			<ul class="crumbs">
+				<li><a href="/">Root</a></li>
+				{{range .BreadCrumbs}}
+					<li><a href="/page/{{.ID}}/view">{{.Name}}</a></li>
+				{{end}}
+			</ul>
 		</div>

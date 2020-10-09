@@ -23,6 +23,7 @@ type templateInput struct {
 	MovingParentPageData  interfaces.Page
 	ChildPages            []interfaces.Page
 	SearchResults         []interfaces.Page
+	BreadCrumbs           []interfaces.Page
 	AllowAccountCreation  bool
 	AccountRequiredToView bool
 	RedirectLink          string

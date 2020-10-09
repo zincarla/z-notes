@@ -93,6 +93,18 @@ func PageRouter(responseWriter http.ResponseWriter, request *http.Request) {
 		}
 	}
 
+	//Grab path for breadcrumbs
+	crumbs, err := database.DBInterface.GetPagePath(PageID)
+	if err != nil {
+		logging.WriteLog(logging.LogLevelError, "pagerouter/PageRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Failed to get page path from database", err.Error()})
+	} else {
+		//Invert slice as it is in reverse order
+		for i, j := 0, len(crumbs)-1; i < j; i, j = i+1, j-1 {
+			crumbs[i], crumbs[j] = crumbs[j], crumbs[i]
+		}
+		TemplateInput.BreadCrumbs = crumbs
+	}
+
 	//Send in template
 	replyWithTemplate("page.html", TemplateInput, responseWriter, request)
 }

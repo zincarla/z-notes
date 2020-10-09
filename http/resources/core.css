@@ -113,6 +113,23 @@ ul {
 #HeadMenu ul li:last-child {
 	border-right: none;
 }
+#HeadMenu ul.crumbs {
+	font-size: .9em;
+}
+#HeadMenu ul.crumbs li {
+	border: none;
+	margin: 0px;
+	padding: 0px;
+}
+
+#HeadMenu ul.crumbs li:after {
+	content: " >"
+}
+
+#HeadMenu ul.crumbs li:last-of-type:after {
+	content: none;
+}
+
 #SideMenu {
 	min-width: 192px;
 	font-size: .9em;
