@@ -17,7 +17,7 @@
 					{{end}}
 					{{if ne .PageData.ID 0}}
 					{{if ne .PageData.PrevID 0}}
-					<li id="backPageMenuOption" class="backPageSpacer"><a href="/pages/{{.PageData.PrevID}}/view"><div class="naviPlus" onclick="return RefreshLibraryMenu('{{.PageData.PrevID}}');">-</div></a>{{.PageData.Name}}</li>
+					<li id="backPageMenuOption" class="backPageSpacer"><a href="/page/{{.PageData.PrevID}}/view"><div class="naviPlus" onclick="return RefreshLibraryMenu('{{.PageData.PrevID}}');">-</div></a>{{.PageData.Name}}</li>
 					{{else}}
 					<li id="backPageMenuOption" class="backPageSpacer"><a href="/"><div class="naviPlus" onclick="return RefreshLibraryMenu('0');">-</div></a>{{.PageData.Name}}</li>
 					{{end}}
