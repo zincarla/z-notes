@@ -13,6 +13,7 @@ import (
 	"z-notes/plugins"
 	"z-notes/plugins/mariadbplugin"
 	"z-notes/routers"
+	"z-notes/routers/api"
 	"z-notes/routers/templatecache"
 
 	"github.com/gorilla/csrf"
@@ -144,7 +145,7 @@ func main() {
 		//requestRouter.HandleFunc("/mod/user", routers.ModUserRouter)
 
 		//API routers
-		//requestRouter.HandleFunc("/api/Logon", api.LogonAPIRouter)
+		requestRouter.HandleFunc("/api/notes/{pageID}/children", api.NoteChildrenGetAPIRouter).Methods("GET")
 		//requestRouter.HandleFunc("/api/Logout", api.LogoutAPIRouter)
 		//requestRouter.HandleFunc("/api/Users", api.UsersAPIRouter)
 

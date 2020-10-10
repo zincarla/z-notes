@@ -35,9 +35,13 @@
 				<li><a href="/about/about.html">About</li></a>
 			</ul>
 			<ul class="crumbs">
+				{{if .BreadCrumbs}}
 				<li><a href="/">Root</a></li>
 				{{range .BreadCrumbs}}
 					<li><a href="/page/{{.ID}}/view">{{.Name}}</a></li>
+				{{end}}
+				{{else}}
+				<li>&nbsp;</li>
 				{{end}}
 			</ul>
 		</div>
