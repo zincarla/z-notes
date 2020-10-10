@@ -2,7 +2,7 @@
 			{{if .HTMLMessage}}{{.HTMLMessage}}<br>{{end}}
 			<a href="javascript:ToggleDIVDisplay('messageContainer');">Click here</a> to close this message.
 		</div>
-		<div id="CellMenuButton" onclick="ToggleCellDIVDisplay('HeadMenu'); ToggleCellDIVDisplay('SideMenu');">&#9776;</div>
+		<div id="CellMenuButton" onclick="toggleCSSClass('HeadMenu', 'cellDefaultHidden'); toggleCSSClass('SideMenu', 'cellDefaultHidden'); toggleCSSClass('MainContentContainer', 'cellDefaultHidden');">&#9776;</div>
 		<div id="HeadMenu" class="cellDefaultHidden">
 			<ul>
 				<li><a href="/">Home</a></li>

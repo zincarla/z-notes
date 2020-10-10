@@ -311,7 +311,7 @@ h6 {
 	display:block;
 }
 .displayHidden {
-	display:none;
+	display:none !important;
 }
 #messageContainer {
 	background-color: #f9f9aa;
@@ -324,6 +324,7 @@ h6 {
 }
 #CellMenuButton {
 	display: none;
+	cursor: pointer;
 }
 table {
 	width: 100%;
@@ -369,11 +370,16 @@ video, audio {
 	#HeadMenu {
 		height: auto;
 	}
+	#SideMenu {
+		display: block;
+		width: 100%;
+		flex: none;
+	}
 	body {
 		font-size: 40px;  
 	}
 	.cellDefaultHidden {
-		display:none;
+		display:none !important;
 	}
 	#CellMenuButton {
 		display: block;
