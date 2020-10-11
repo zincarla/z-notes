@@ -308,7 +308,7 @@ h6 {
 	text-decoration-style: dotted;
 }
 .displayBlock {
-	display:block;
+	display:block !important;
 }
 .displayHidden {
 	display:none !important;
@@ -394,5 +394,16 @@ video, audio {
 	}
 	.card {
 		width: 100%;
+	}
+	#HeadMenu .dropDownContent {
+		width: calc(100vw - 32px);
+		left:0px;
+	}
+	/*used to show or hide cell-only items*/
+	.cellDisplayBlock {
+		display:block !important;
+	}
+	.cellDisplayHidden {
+		display:none !important;
 	}
 }

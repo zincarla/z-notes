@@ -8,8 +8,8 @@
 				<li><a href="/">Home</a></li>
 				{{if ne .UserInformation.DBID 0}}
 				{{if ne .PageData.ID 0}}
-				<li>Note
-					<div class="dropDownContent">
+				<li onclick="toggleCSSClass('noteDDC', 'cellDisplayBlock');">Note
+					<div class="dropDownContent" id="noteDDC">
 						<ul>
 							<li>
 								<a href="/page/{{.PageData.ID}}/view">View</a>
@@ -30,7 +30,7 @@
 					</div>
 				</li>
 				{{end}}
-				<li>Profile<div class="dropDownContent"><a href="/openidc/logout">Logout</a></div></li>
+				<li onclick="toggleCSSClass('logoutDDC', 'cellDisplayBlock');">Profile<div class="dropDownContent" id="logoutDDC"><a href="/openidc/logout">Logout</a></div></li>
 				{{end}}
 				<li><a href="/about/about.html">About</li></a>
 			</ul>
