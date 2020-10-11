@@ -7,7 +7,10 @@
 				<form method="POST" id="EditPageForm">
 					{{.CSRF}}
 					<input type="text" name="PageName" value="{{.PageData.Name}}">
-					<textarea name="PageContent">{{.PageData.Content}}</textarea>
+					<textarea name="PageContent" id="PageContent">{{.PageData.Content}}</textarea>
+					<script>
+						var easyMDE = new EasyMDE({element: $('#PageContent')[0]});
+					</script>
 					<input type="submit" value="Update">
 				</form>
 			</div>
