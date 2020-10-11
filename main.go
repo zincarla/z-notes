@@ -185,7 +185,7 @@ func fixMissingConfigs() {
 		config.Configuration.Address = ":8080"
 	}
 	if config.Configuration.PageDirectory == "" {
-		config.Configuration.PageDirectory = "." + string(filepath.Separator) + "pages"
+		config.Configuration.PageDirectory = "." + string(filepath.Separator) + "files"
 	}
 	if config.Configuration.HTTPRoot == "" {
 		config.Configuration.HTTPRoot = "." + string(filepath.Separator) + "http"
@@ -207,6 +207,9 @@ func fixMissingConfigs() {
 	}
 	if config.Configuration.MaxQueryResults == 0 {
 		config.Configuration.MaxQueryResults = 20
+	}
+	if config.Configuration.OpenIDCallbackURL == "" {
+		config.Configuration.OpenIDCallbackURL = "http://localhost:8080/openidc/callback"
 	}
 	config.CreateSessionStore()
 }
