@@ -1,4 +1,6 @@
 FROM alpine:latest
+RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
+RUN update-ca-certificates
 RUN mkdir "/var/z-notes"
 RUN mkdir "/var/z-notes/files"
 RUN mkdir "/var/z-notes/configuration"
