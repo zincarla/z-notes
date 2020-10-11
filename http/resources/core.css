@@ -217,6 +217,7 @@ ul {
 	background-color: white;
 	left: 182px; /*width of parent list item*/
 	top: -0.9em; /*height of parent list item*/
+	box-sizing: border-box;
 }
 
 .createPageMenuOption:hover form {
@@ -399,6 +400,13 @@ video, audio {
 		width: calc(100vw - 32px);
 		left:0px;
 	}
+	/*Create page menu option*/
+	.createPageMenuOption form{
+		width: calc(100vw - 36px);
+		left:8px;
+		top:unset;
+	}
+
 	/*used to show or hide cell-only items*/
 	.cellDisplayBlock {
 		display:block !important;
