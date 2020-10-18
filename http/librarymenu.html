@@ -1,12 +1,12 @@
 			<div id="SideMenu" class="cellDefaultHidden">
-				<ul>
+				<ul id="SideMenuTop">
 					<li class="sideSearchForm">
 						<form id="searchForm" action="/search" method="get">
 							<input type="text" name="Search" placeholder="Search...">
 						</form>
 					</li>
 					{{if .IsLoggedOn}}
-					<li class="createPageMenuOption specialSideMenuli">Create Note +
+					<li class="createPageMenuOption">Create Note +
 						<form method="POST" action="/createpage">
 							{{.CSRF}}
 							<input type="text" name="NoteName" placeholder="New Note" autocomplete="off" required>
@@ -15,19 +15,21 @@
 						</form>
 					</li>
 					{{end}}
-					{{if ne .PageData.ID 0}}
-					{{if ne .PageData.PrevID 0}}
-					<li id="backPageMenuOption" class="backPageSpacer"><a href="/page/{{.PageData.PrevID}}/view"><div class="naviPlus" onclick="return RefreshLibraryMenu('{{.PageData.PrevID}}');">-</div></a>{{.PageData.Name}}</li>
-					{{else}}
-					<li id="backPageMenuOption" class="backPageSpacer"><a href="/"><div class="naviPlus" onclick="return RefreshLibraryMenu('0');">-</div></a>{{.PageData.Name}}</li>
-					{{end}}
-					{{else}}
-					<li id="backPageMenuOption" class="backPageSpacer">Library Root</li>
-					{{end}}
+					<a href="/"><li id="libraryRootMenuOption">Library Root</li></a>
 				</ul>
 				<ul id="naviMenu">
-					{{range .ChildPages}}
-					<a href="/page/{{.ID}}/view"><li><div class="naviPlus" onclick="return RefreshLibraryMenu('{{.ID}}');">+</div>{{.Name}}</li></a>
+					{{define "navimenuitem"}}
+					<li>
+						<a href="/page/{{.ID}}/view"><div class="naviPlus" onclick="return ToggleLibraryMenu('{{.ID}}', this);">{{if .Children}}-{{else}}+{{end}}</div><span class="naviLabel">{{.Name}}</span></a>
+						<ul>
+							{{range .Children}}
+								{{template "navimenuitem" .}}
+							{{end}}
+						</ul>
+					</li>
+					{{end}}
+					{{range .BreadCrumbRoot.Children}}
+						{{template "navimenuitem" .}}
 					{{end}}
 				</ul>
 			</div>

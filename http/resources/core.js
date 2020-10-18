@@ -18,12 +18,22 @@ function toggleCSSClass(elementID, className) {
     }
 }
 
-//RefreshLibraryMenu will send an API request to pull the children of pageID. When the API response is received, it will replace the current library menu
-function RefreshLibraryMenu(pageID) {
+//ToggleLibraryMenu toggles library nodes
+function ToggleLibraryMenu(pageID, naviPlus) {
+    //First, determine toggle state
+    if (naviPlus.innerHTML.includes("-")) {
+        //Toggle state is open, so we need to close
+        $(naviPlus).html("+")
+        //Find parent li
+        emptyUL = document.createElement("ul")
+        $($(naviPlus).parents("li")[0]).children("ul").replaceWith(emptyUL)
+        return false;
+    }
+
     fetch("/api/notes/"+pageID+"/children")
         .then((resp) => resp.json()) //Convert response to json
         .then(function(jsonData) {
-            SetLibraryMenu(jsonData.Data)
+            SetLibraryMenuNode(jsonData.Data, naviPlus)
         })
         .catch(function(err) {
             console.log(err);
@@ -31,65 +41,38 @@ function RefreshLibraryMenu(pageID) {
     return false; //Prevent hyperlinks from activating
 }
 
-//Should be called by RefreshLibraryMenu. Wipes the side menu, and rebuilds.
-function SetLibraryMenu(libraryData) {
-    //Create new UL //<a href="/page/{{.ID}}/view"><li><div class="naviPlus" onclick="return RefreshLibraryMenu('{{.ID}}');"> + </div>{{.Name}}</li></a>
+//Should be called by ToggleLibraryMenu. Wipes the existing ul, and replaces with updated menu
+function SetLibraryMenuNode(libraryData, naviPlus) {
+    //Create the new ul
     NewUL = document.createElement("ul")
-    NewUL.id = "naviMenu"
-    //Add the LIs
+    //Add the LIs to the new ul
     if (libraryData.Children) {
         for (i = 0; i<libraryData.Children.length; i++) {
+            //Create elements
             NewA = document.createElement("a")
             NewA.href="/page/"+libraryData.Children[i].ID+"/view"
+
             NewLI = document.createElement("li")
+
             NewPlus = document.createElement("div")
             NewPlus.classList.add("naviPlus")
             NewPlus.appendChild(document.createTextNode("+"))
-            $(NewPlus).on("click", {ID: libraryData.Children[i].ID}, function(eventData) {return RefreshLibraryMenu(eventData.data.ID);} );
+            $(NewPlus).on("click", {ID: libraryData.Children[i].ID, newPlus: NewPlus}, function(eventData) {return ToggleLibraryMenu(eventData.data.ID, eventData.data.newPlus);} );
+
+            NewSpan = document.createElement("span")
+            NewSpan.classList.add("naviLabel")
+            NewSpan.appendChild(document.createTextNode(libraryData.Children[i].Name))
+
             NewLI.appendChild(NewPlus)
-            NewLI.appendChild(document.createTextNode(libraryData.Children[i].Name))
+            NewLI.appendChild(NewSpan)
+            NewLI.appendChild(document.createElement("ul"))
             NewA.appendChild(NewLI);
             NewUL.appendChild(NewA);
         }
     }
-    OldUL = document.getElementById("naviMenu")
-    //Replace existing UL
-    document.getElementById("naviMenu").parentElement.replaceChild(NewUL, OldUL)
 
-    //Now set back button
-    //<a href="/page/{{.PageData.PrevID}}/view"><li class="backPageMenuOption specialSideMenuli"><div class="naviPlus" onclick="return RefreshLibraryMenu('{{.PageData.PrevID}}');">-</div>{{.ParentPageData.Name}}</li></a>
-    if (CurrentPageID != libraryData.CurrentPage.ID) {
-        NewA = document.createElement("a")
-        if (libraryData.CurrentPage.ID == "0") {
-            NewA.href="/"
-        } else {
-            NewA.href="/page/"+libraryData.CurrentPage.ID+"/view"
-        }
-    }
-    NewLI = document.createElement("li")
-    NewLI.id="backPageMenuOption"
-    NewLI.classList.add("specialSideMenuli")
-    if (CurrentPageID == libraryData.CurrentPage.ID) {
-        NewLI.classList.add("backPageSpacer")
-    }
-    if (libraryData.CurrentPage.ID != "0") {
-        NewPlus = document.createElement("div")
-        NewPlus.classList.add("naviPlus")
-        NewPlus.appendChild(document.createTextNode("-"))
-        $(NewPlus).on("click", {ID: libraryData.CurrentPage.PrevID}, function(eventData) {return RefreshLibraryMenu(eventData.data.ID);} );
-        NewLI.appendChild(NewPlus)
-    }
-    NewLI.appendChild(document.createTextNode(libraryData.CurrentPage.Name))
-    if (CurrentPageID != libraryData.CurrentPage.ID) {
-        NewA.appendChild(NewLI);
-    } else {
-        NewA = NewLI
-    }
-    //Replace existing backbutton
-    OldItem = document.getElementById("backPageMenuOption")
-    if (OldItem.parentElement.nodeName.toLowerCase() === "a") {
-        OldItem.parentElement.parentElement.replaceChild(NewA, OldItem.parentElement)
-    } else {
-        OldItem.parentElement.replaceChild(NewA, OldItem)
-    }
+    //Toggle state is closed, so we need to open
+    $(naviPlus).html("-")
+    //Find parent li
+    $($(naviPlus).parents("li")[0]).children("ul").replaceWith(NewUL)
 }

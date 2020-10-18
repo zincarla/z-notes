@@ -21,8 +21,9 @@ func RootRouter(responseWriter http.ResponseWriter, request *http.Request) {
 			logging.WriteLog(logging.LogLevelWarning, "pagerouter/PageRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Failed to get root pages", err.Error()})
 			TemplateInput.HTMLMessage = template.HTML("Failed to get root pages, internal error occured.")
 		} else {
-			TemplateInput.ChildPages = roots
+			TemplateInput.PageData.Children = roots
 		}
+		TemplateInput.BreadCrumbRoot = TemplateInput.PageData
 	}
 	replyWithTemplate("index.html", TemplateInput, responseWriter, request)
 }

@@ -57,52 +57,21 @@ func PageRouter(responseWriter http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	//Grab page content
-	pageData, err := database.DBInterface.GetPage(PageID)
+	//Get page data, fill out crumbs
+	err = FillTemplatePageData(PageID, &TemplateInput)
 	if err != nil {
 		logging.WriteLog(logging.LogLevelWarning, "pagerouter/PageRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Error occured getting page data", pageID, err.Error()})
-		redirectWithFlash(responseWriter, request, "/", "Page requested could not be found", "pageError")
+		redirectWithFlash(responseWriter, request, "/", "Note does not exist or form filled incorrectly", "moveError")
 		return
 	}
 
-	//Parse content into HTML
-	TemplateInput.Title = pageData.Name
-	TemplateInput.PageData = pageData
-	parsedData, err := GetParsedPage(pageData.Content)
+	//Parse page data
+	parsedData, err := GetParsedPage(TemplateInput.PageData.Content)
 	if err != nil {
 		logging.WriteLog(logging.LogLevelWarning, "pagerouter/PageRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Failed to parse page contents", err.Error()})
 		TemplateInput.HTMLMessage = template.HTML("Failed to parse page contents. Please check page contents for issues in the markdown.")
 	} else {
 		TemplateInput.PageContent = parsedData
-	}
-
-	//Grab child pages so that the menu may be constructed in template
-	children, err := database.DBInterface.GetPageChildren(PageID)
-	if err != nil {
-		logging.WriteLog(logging.LogLevelWarning, "pagerouter/PageRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Failed to get child pages", err.Error()})
-		TemplateInput.HTMLMessage = template.HTML("Failed to get child pages, internal error occured.")
-	} else {
-		TemplateInput.ChildPages = children
-	}
-	//Grab ParentPageData for menu in template
-	TemplateInput.ParentPageData = interfaces.Page{Name: "Library Root", OwnerID: TemplateInput.UserInformation.DBID}
-	if pageData.PrevID != 0 {
-		TemplateInput.ParentPageData, err = database.DBInterface.GetPage(pageData.PrevID)
-		if err != nil {
-			logging.WriteLog(logging.LogLevelError, "pagerouter/PageRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Failed to parse get parent page from database", err.Error()})
-		}
-	}
-
-	//Grab path for breadcrumbs
-	crumbs, err := database.DBInterface.GetPagePath(PageID)
-	if err != nil {
-		logging.WriteLog(logging.LogLevelError, "pagerouter/PageRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Failed to get page path from database", err.Error()})
-	} else {
-		//Invert slice as it is in reverse order
-		for i, j := 0, len(crumbs)-1; i < j; i, j = i+1, j-1 {
-			crumbs[i], crumbs[j] = crumbs[j], crumbs[i]
-		}
-		TemplateInput.BreadCrumbs = crumbs
 	}
 
 	//Send in template

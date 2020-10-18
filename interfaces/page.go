@@ -12,4 +12,6 @@ type Page struct {
 	OwnerID uint64
 	//Content of page in markdown
 	Content string
+	//Children slice of this Page's Children
+	Children []Page
 }

@@ -119,7 +119,7 @@ func (DBConnection *MariaDBPlugin) GetEffectivePermission(pageAccess interfaces.
 	}
 
 	//First we need the page path
-	pagePath, err := DBConnection.GetPagePath(pageAccess.PageID)
+	pagePath, err := DBConnection.GetPagePath(pageAccess.PageID, false)
 	if err != nil {
 		return toReturn, fmt.Errorf("Failed to generate pagepath for permissions for page %v", pageAccess.PageID)
 	}

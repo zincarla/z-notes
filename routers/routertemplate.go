@@ -19,11 +19,9 @@ type templateInput struct {
 	HTMLMessage           template.HTML
 	PageContent           template.HTML
 	PageData              interfaces.Page
-	ParentPageData        interfaces.Page
 	MovingParentPageData  interfaces.Page
-	ChildPages            []interfaces.Page
 	SearchResults         []interfaces.Page
-	BreadCrumbs           []interfaces.Page
+	BreadCrumbRoot        interfaces.Page
 	AllowAccountCreation  bool
 	AccountRequiredToView bool
 	RedirectLink          string
@@ -61,7 +59,7 @@ func replyWithTemplate(templateName string, templateInputInterface interface{}, 
 
 //getNewTemplateInput helper function initiliazes a new templateInput with common information
 func getNewTemplateInput(responseWriter http.ResponseWriter, request *http.Request) templateInput {
-	TemplateInput := templateInput{Title: "ZNotes",
+	TemplateInput := templateInput{Title: "Z-Notes",
 		Version:              config.ApplicationVersion,
 		AllowAccountCreation: config.Configuration.AllowAccountCreation,
 		RequestStart:         time.Now(),

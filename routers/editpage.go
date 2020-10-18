@@ -1,7 +1,6 @@
 package routers
 
 import (
-	"html/template"
 	"net/http"
 	"strconv"
 	"z-notes/database"
@@ -52,32 +51,12 @@ func EditPageGetRouter(responseWriter http.ResponseWriter, request *http.Request
 		return
 	}
 
-	//Grab page content
-	pageData, err := database.DBInterface.GetPage(PageID)
+	//Get page data, fill out crumbs
+	err = FillTemplatePageData(PageID, &TemplateInput)
 	if err != nil {
 		logging.WriteLog(logging.LogLevelWarning, "editpage/EditPageGetRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Error occured getting page data", pageID, err.Error()})
-		redirectWithFlash(responseWriter, request, "/", "Note does not exist or form filled incorrectly", "editError")
+		redirectWithFlash(responseWriter, request, "/", "Note does not exist or form filled incorrectly", "moveError")
 		return
-	}
-	//Parse content into HTML
-	TemplateInput.Title = pageData.Name
-	TemplateInput.PageData = pageData
-
-	//Grab child pages so that the menu may be constructed in template
-	children, err := database.DBInterface.GetPageChildren(PageID)
-	if err != nil {
-		logging.WriteLog(logging.LogLevelWarning, "editpage/EditPageGetRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Failed to get child pages", err.Error()})
-		TemplateInput.HTMLMessage = template.HTML("Failed to get child pages, internal error occured.")
-	} else {
-		TemplateInput.ChildPages = children
-	}
-	//Grab ParentPageData for menu in template
-	TemplateInput.ParentPageData = interfaces.Page{Name: "Library Root", OwnerID: TemplateInput.UserInformation.DBID}
-	if pageData.PrevID != 0 {
-		TemplateInput.ParentPageData, err = database.DBInterface.GetPage(pageData.PrevID)
-		if err != nil {
-			logging.WriteLog(logging.LogLevelError, "pagerouter/PageRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Failed to parse get parent page from database", err.Error()})
-		}
 	}
 
 	//Reply with edit form

@@ -151,7 +151,7 @@ func (DBConnection *MariaDBPlugin) GetRootPages(userID uint64) ([]interfaces.Pag
 }
 
 //GetPagePath returns the a slice representing the page up to the root
-func (DBConnection *MariaDBPlugin) GetPagePath(pageID uint64) ([]interfaces.Page, error) {
+func (DBConnection *MariaDBPlugin) GetPagePath(pageID uint64, rootFirst bool) ([]interfaces.Page, error) {
 	var toReturn []interfaces.Page
 	if pageID == 0 {
 		return toReturn, errors.New("Page ID not provided")
@@ -168,6 +168,13 @@ func (DBConnection *MariaDBPlugin) GetPagePath(pageID uint64) ([]interfaces.Page
 		}
 		nextID = pageData.PrevID
 		toReturn = append(toReturn, pageData)
+	}
+
+	if rootFirst {
+		//Invert slice as it is in reverse order of request
+		for i, j := 0, len(toReturn)-1; i < j; i, j = i+1, j-1 {
+			toReturn[i], toReturn[j] = toReturn[j], toReturn[i]
+		}
 	}
 
 	return toReturn, nil

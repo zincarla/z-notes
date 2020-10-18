@@ -42,17 +42,15 @@ func SecurityPageGetRouter(responseWriter http.ResponseWriter, request *http.Req
 		return
 	}
 
-	//Grab page content
-	pageData, err := database.DBInterface.GetPage(PageID)
+	//Get page data/crumbs
+	err = FillTemplatePageData(PageID, &TemplateInput)
 	if err != nil {
 		logging.WriteLog(logging.LogLevelWarning, "permissionpage/SecurityPageGetRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Error occured getting page data", pageID, err.Error()})
-		redirectWithFlash(responseWriter, request, "/", "Note does not exist", "secError")
+		redirectWithFlash(responseWriter, request, "/", "Note does not exist or form filled incorrectly", "moveError")
 		return
 	}
-	//Parse content into HTML
-	TemplateInput.Title = pageData.Name
-	TemplateInput.PageData = pageData
 
+	//Get permissions
 	permissions, err := database.DBInterface.GetPermissions(PageID)
 	if err != nil {
 		logging.WriteLog(logging.LogLevelWarning, "permissionpage/SecurityPageGetRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Failed to get page permissions", err.Error()})

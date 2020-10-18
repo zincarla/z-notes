@@ -138,42 +138,36 @@ ul {
 	border-radius: 0px 10px 0px 0px;
 }
 #SideMenu ul {
-	padding: 5px 5px 0px 0px;
+	padding: 0px 0px 0px .33em;
 }
-#SideMenu ul:first-of-type {
-	border-radius: 0px 10px 0px 0px;
+#SideMenuTop {
+	border-radius: inherit;
 	background-color:rgb(185, 185, 185);
+}
+#SideMenuTop li {
+	border-bottom: darkgray 1px solid;
+}
+#SideMenuTop li:first-of-type {
+	border-bottom: darkgray 1px solid;
+	border-radius: inherit;
+}
+#SideMenuTop li:hover {
+	background-color: lightslategray;
+}
+#SideMenu a:hover {
+	background-color: lightslategray;
 }
 #SideMenu li {
 	text-transform: capitalize;
 	position: relative;
 	display: block;
-	padding: 4px;
-	border-bottom: darkgray 1px solid;
+	padding: 2px;
 }
 #SideMenu a {
 	color: unset;
 	text-decoration: none;
 }
-#SideMenu li:hover {
-	background-color: lightslategray;
-}
-#SideMenu li.backPageSpacer {
-	border: unset;
-	background-color: rgb(185, 185, 185);
-	color: rgb(145, 145, 145);
-}
-#SideMenu li.backPageSpacer:hover {
-	background-color: rgb(185, 185, 185);
-	color: rgb(145, 145, 145);
-}
-.sideSearchForm {
-	background-color: rgb(185, 185, 185);
-}
-.specialSideMenuli {
-	background-color: rgb(185, 185, 185);
-}
-#backPageMenuOption { /*same as specialSideMenuli*/
+#libraryRootMenuOption { /*same as specialSideMenuli*/
 	background-color: rgb(185, 185, 185);
 }
 .naviPlus {
@@ -189,6 +183,9 @@ ul {
 }
 .naviPlus:hover {
 	background-color: rgb(109, 109, 109);
+}
+.naviLabel {
+	width:100%;
 }
 
 #LibraryNavigation {

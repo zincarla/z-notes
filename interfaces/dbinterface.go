@@ -25,8 +25,8 @@ type DBInterface interface {
 	GetPage(pageID uint64) (Page, error)
 	//GetPageChildren returns incomplete page data for children of the specified page (Content not included)
 	GetPageChildren(pageID uint64) ([]Page, error)
-	//GetPagePath returns the a slice representing the page up to the root
-	GetPagePath(pageID uint64) ([]Page, error)
+	//GetPagePath returns a slice representing the page to the root, order of slice is determined by rootFirst
+	GetPagePath(pageID uint64, rootFirst bool) ([]Page, error)
 	//GetRootPages returns incomplete page data for root pages of the specified user (Content not included)
 	GetRootPages(userID uint64) ([]Page, error)
 	//SearchPages returns incomplete page data for for pages that match the supplied query

@@ -35,11 +35,25 @@
 				<li><a href="/about/about.html">About</li></a>
 			</ul>
 			<ul class="crumbs">
-				{{if .BreadCrumbs}}
-				<li><a href="/">Root</a></li>
-				{{range .BreadCrumbs}}
+				{{define "crumbitem"}}
+					{{if gt (len .Children) 0}}
 					<li><a href="/page/{{.ID}}/view">{{.Name}}</a></li>
+						{{range .Children}}
+							{{template "crumbitem" .}}
+						{{end}}
+					{{end}}
 				{{end}}
+
+				{{if .BreadCrumbRoot}}
+					<li><a href="/">Root</a></li>
+					{{if gt (len .BreadCrumbRoot.Children) 0}}
+						{{range .BreadCrumbRoot.Children}}
+							{{template "crumbitem" .}}
+						{{end}}
+					{{end}}
+					{{if eq (len .PageData.Children) 0}}
+					<li><a href="/page/{{.PageData.ID}}/view">{{.PageData.Name}}</a></li>
+					{{end}}
 				{{else}}
 				<li>&nbsp;</li>
 				{{end}}

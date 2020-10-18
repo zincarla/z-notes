@@ -68,30 +68,12 @@ func MovePageGetRouter(responseWriter http.ResponseWriter, request *http.Request
 	}
 	TemplateInput.MovingParentPageData = newParentPage
 
-	//Grab page content
-	pageData, err := database.DBInterface.GetPage(PageID)
+	//Get page data, fill out crumbs, children
+	err = FillTemplatePageData(PageID, &TemplateInput)
 	if err != nil {
 		logging.WriteLog(logging.LogLevelWarning, "movepage/MovePageGetRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Error occured getting page data", pageID, err.Error()})
 		redirectWithFlash(responseWriter, request, "/", "Note does not exist or form filled incorrectly", "moveError")
 		return
-	}
-	//Parse content into HTML
-	TemplateInput.Title = pageData.Name
-	TemplateInput.PageData = pageData
-
-	//Grab child pages so that the menu may be constructed in template
-	TemplateInput.ChildPages, err = database.DBInterface.GetPageChildren(PageID)
-	if err != nil {
-		logging.WriteLog(logging.LogLevelWarning, "movepage/MovePageGetRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Failed to get child pages", err.Error()})
-		TemplateInput.HTMLMessage = template.HTML("Failed to get child pages, internal error occured.")
-	}
-	//Grab ParentPageData for menu in template
-	TemplateInput.ParentPageData = interfaces.Page{Name: "Library Root", OwnerID: TemplateInput.UserInformation.DBID}
-	if pageData.PrevID != 0 {
-		TemplateInput.ParentPageData, err = database.DBInterface.GetPage(pageData.PrevID)
-		if err != nil {
-			logging.WriteLog(logging.LogLevelError, "pagerouter/PageRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Failed to parse get parent page from database", err.Error()})
-		}
 	}
 
 	//For navigation, get children of parentPageID we will reuse searchResults
@@ -206,7 +188,7 @@ func MovePagePostRouter(responseWriter http.ResponseWriter, request *http.Reques
 	}
 	//Then check the parent pages
 	if newParentPage.ID != 0 { //No need to check if moving to root
-		pagePath, err := database.DBInterface.GetPagePath(newParentPage.ID)
+		pagePath, err := database.DBInterface.GetPagePath(newParentPage.ID, false)
 		if err != nil {
 			logging.WriteLog(logging.LogLevelError, "movepage/MovePagePostRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Error occured moving page. The page's path could not be retrived.", pageID, strconv.FormatUint(parentPageID, 10), err.Error()})
 			redirectWithFlash(responseWriter, request, "/page/"+strconv.FormatUint(PageID, 10)+"/view", "Page could not be moved, internal error", "moveError")
