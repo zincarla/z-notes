@@ -212,8 +212,8 @@ ul {
 	z-index: 1;
 	width:192px;
 	background-color: white;
-	left: 182px; /*width of parent list item*/
-	top: -0.9em; /*height of parent list item*/
+	left: 90%; /*Offset so it overlaps parent a bit*/
+	top: -75%; 
 	box-sizing: border-box;
 }
 

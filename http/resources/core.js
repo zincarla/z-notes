@@ -63,14 +63,18 @@ function SetLibraryMenuNode(libraryData, naviPlus) {
             NewSpan.classList.add("naviLabel")
             NewSpan.appendChild(document.createTextNode(libraryData.Children[i].Name))
 
-            NewLI.appendChild(NewPlus)
-            NewLI.appendChild(NewSpan)
+            NewLI.appendChild(NewA)
+            NewA.appendChild(NewPlus)
+            NewA.appendChild(NewSpan)
             NewLI.appendChild(document.createElement("ul"))
-            NewA.appendChild(NewLI);
-            NewUL.appendChild(NewA);
+            NewUL.appendChild(NewLI);
         }
     }
 
+    //Add create page node
+    newCreatePage = document.getElementById("createPageTemplate").content.firstElementChild.cloneNode(true)
+    $(newCreatePage).find("input[name='ParentID']").get(0).value = libraryData.CurrentPage.ID
+    NewUL.appendChild(newCreatePage);
     //Toggle state is closed, so we need to open
     $(naviPlus).html("-")
     //Find parent li
