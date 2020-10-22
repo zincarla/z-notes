@@ -221,6 +221,10 @@ ul {
 	display: block;
 }
 
+.confirmCSRF {
+	display:none;
+}
+
 #MainContentContainer {
 	width: 100%;
 	padding: 0px 10px 10px 10px;

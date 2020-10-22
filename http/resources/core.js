@@ -71,12 +71,30 @@ function SetLibraryMenuNode(libraryData, naviPlus) {
         }
     }
 
-    //Add create page node
-    newCreatePage = document.getElementById("createPageTemplate").content.firstElementChild.cloneNode(true)
-    $(newCreatePage).find("input[name='ParentID']").get(0).value = libraryData.CurrentPage.ID
-    NewUL.appendChild(newCreatePage);
+    if (LoggedIn) {
+        //Add create page node
+        newCreatePage = document.getElementById("createPageTemplate").content.firstElementChild.cloneNode(true)
+        $(newCreatePage).find("input[name='ParentID']").get(0).value = libraryData.CurrentPage.ID
+        NewUL.appendChild(newCreatePage);
+    }
     //Toggle state is closed, so we need to open
     $(naviPlus).html("-")
     //Find parent li
     $($(naviPlus).parents("li")[0]).children("ul").replaceWith(NewUL)
 }
+
+//AddCreateNodes adds Create Note nodes to the menu on first load
+function AddCreateNodes() {
+    if (LoggedIn) {
+        toReplace = $(".confirmCSRF")
+        for (i = 0; i<toReplace.length; i++) {
+            parentID = $(toReplace[i]).find("input[name='ParentID']").get(0).value
+
+            newCreatePage = document.getElementById("createPageTemplate").content.firstElementChild.cloneNode(true)
+            $(newCreatePage).find("input[name='ParentID']").get(0).value = parentID
+            $(toReplace[i]).replaceWith(newCreatePage)
+        }
+    }
+}
+
+$(document).ready(AddCreateNodes)

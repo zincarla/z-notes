@@ -28,8 +28,40 @@
 						</ul>
 					</li>
 					{{end}}
-					{{range .BreadCrumbRoot.Children}}
-						{{template "navimenuitem" .}}
+					{{define "navimenuitemli"}}
+					<li>
+						<a href="/page/{{.ID}}/view"><div class="naviPlus" onclick="return ToggleLibraryMenu('{{.ID}}', this);">{{if .Children}}-{{else}}+{{end}}</div><span class="naviLabel">{{.Name}}</span></a>
+						<ul>
+							{{if .Children}}
+							{{range .Children}}
+								{{template "navimenuitemli" .}}
+							{{end}}
+							<li class="confirmCSRF">
+								<form method="POST" action="/createpage">
+									<input type="hidden" name="ParentID" value="{{.ID}}" required>
+								</form>
+							</li>
+							{{end}}
+						</ul>
+					</li>
+					{{end}}
+
+					{{if .IsLoggedOn}}
+						{{range .BreadCrumbRoot.Children}}
+							{{template "navimenuitemli" .}}
+						{{end}}
+						<li class="createPageMenuOption">Create Note +
+							<form method="POST" action="/createpage">
+								{{.CSRF}}
+								<input type="text" name="NoteName" placeholder="New Note" autocomplete="off" required>
+								<input type="hidden" name="ParentID" value="{{.PageData.ID}}" required>
+								<input type="submit" value="Create">
+							</form>
+						</li>
+					{{else}}
+						{{range .BreadCrumbRoot.Children}}
+							{{template "navimenuitemli" .}}
+						{{end}}
 					{{end}}
 				</ul>
 			</div>
