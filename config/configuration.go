@@ -67,6 +67,8 @@ type ConfigurationSettings struct {
 	LoggingBlackList string
 	//MaxQueryResults is how many results to return for a page search, defaults to 20
 	MaxQueryResults uint64
+	//MaxEmbedSize maximum allowed size of an auto-embed
+	MaxEmbedSize int64
 }
 
 //SessionStore contains cookie information

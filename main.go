@@ -211,6 +211,9 @@ func fixMissingConfigs() {
 	if config.Configuration.OpenIDCallbackURL == "" {
 		config.Configuration.OpenIDCallbackURL = "http://localhost:8080/openidc/callback"
 	}
+	if config.Configuration.MaxEmbedSize == 0 {
+		config.Configuration.MaxEmbedSize = config.Configuration.MaxUploadBytes
+	}
 	config.CreateSessionStore()
 }
 
