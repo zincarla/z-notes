@@ -54,7 +54,7 @@
 							<form method="POST" action="/createpage">
 								{{.CSRF}}
 								<input type="text" name="NoteName" placeholder="New Note" autocomplete="off" required>
-								<input type="hidden" name="ParentID" value="{{.PageData.ID}}" required>
+								<input type="hidden" name="ParentID" value="0" required>
 								<input type="submit" value="Create">
 							</form>
 						</li>
