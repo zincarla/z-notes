@@ -26,6 +26,12 @@
 							<li>
 								<a href="/page/{{.PageData.ID}}/move?ParentPageID={{.PageData.PrevID}}">Move</a>
 							</li>
+							<li>
+								<form action="/page/{{.PageData.ID}}/delete" method="POST">
+									{{.CSRF}}
+									<input type="submit" value="Delete" onclick="return ShowConfirmForDelete(this,'This will also delete all child notes!');">
+								</form>
+							</li>
 						</ul>
 					</div>
 				</li>

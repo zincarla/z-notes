@@ -133,6 +133,7 @@ func main() {
 		requestRouter.HandleFunc("/search", routers.SearchRouter).Methods("GET")
 		requestRouter.HandleFunc("/page/{pageID}/edit", routers.EditPageGetRouter).Methods("GET")
 		requestRouter.HandleFunc("/page/{pageID}/edit", routers.EditPagePostRouter).Methods("POST")
+		requestRouter.HandleFunc("/page/{pageID}/delete", routers.DeletePagePostRouter).Methods("POST")
 		requestRouter.HandleFunc("/page/{pageID}/file/upload", routers.UploadFilePostRouter).Methods("POST")
 		requestRouter.HandleFunc("/page/{pageID}/file", routers.UploadFileGetRouter).Methods("GET")
 		requestRouter.HandleFunc("/page/{pageID}/file/delete", routers.DeleteFilePostRouter).Methods("POST")

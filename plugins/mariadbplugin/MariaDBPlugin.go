@@ -15,7 +15,7 @@ import (
 )
 
 //TODO: Increment this whenever we alter the DB Schema, ensure you attempt to add update code below
-var currentDBVersion int64 = 0
+var currentDBVersion int64 = 1
 
 //TODO: Increment this when we alter the db schema and don't add update code to compensate
 var minSupportedDBVersion int64 // 0 by default
@@ -94,13 +94,13 @@ func (DBConnection *MariaDBPlugin) performFreshDBInstall() error {
 		return err
 	}
 	//Pages
-	_, err = DBConnection.DBHandle.Exec("CREATE TABLE Pages (ID BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE, PrevID BIGINT UNSIGNED, CONSTRAINT fk_PagesPrevID FOREIGN KEY (PrevID) REFERENCES Pages(ID), INDEX(PrevID), Name VARCHAR(255) NOT NULL DEFAULT 'Unnamed Note', INDEX(Name), OwnerID BIGINT UNSIGNED NOT NULL, INDEX(OwnerID), CONSTRAINT fk_PagesOwnerID FOREIGN KEY (OwnerID) REFERENCES Users(ID), Content MEDIUMTEXT NOT NULL DEFAULT '', FULLTEXT ft_Content (Content));")
+	_, err = DBConnection.DBHandle.Exec("CREATE TABLE Pages (ID BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE, PrevID BIGINT UNSIGNED, CONSTRAINT fk_PagesPrevID FOREIGN KEY (PrevID) REFERENCES Pages(ID) ON DELETE CASCADE, INDEX(PrevID), Name VARCHAR(255) NOT NULL DEFAULT 'Unnamed Note', INDEX(Name), OwnerID BIGINT UNSIGNED NOT NULL, INDEX(OwnerID), CONSTRAINT fk_PagesOwnerID FOREIGN KEY (OwnerID) REFERENCES Users(ID) ON DELETE CASCADE, Content MEDIUMTEXT NOT NULL DEFAULT '', FULLTEXT ft_Content (Content));")
 	if err != nil {
 		logging.WriteLog(logging.LogLevelCritical, "MariaDBPlugin/performFreshDBInstall", "*", logging.ResultFailure, []string{"Failed to install database", err.Error()})
 		return err
 	}
 	//PagePermissions
-	_, err = DBConnection.DBHandle.Exec("CREATE TABLE PagePermissions (ID BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE, PageID BIGINT UNSIGNED NOT NULL, INDEX(PageID), CONSTRAINT fk_PagePermissionsPageID FOREIGN KEY (PageID) REFERENCES Pages(ID), UserID BIGINT UNSIGNED NOT NULL, INDEX(UserID), CONSTRAINT fk_PagePermissionsUserID FOREIGN KEY (UserID) REFERENCES Users(ID), UNIQUE INDEX PageUserPair (PageID,UserID), Permissions BIGINT UNSIGNED NOT NULL DEFAULT 0);")
+	_, err = DBConnection.DBHandle.Exec("CREATE TABLE PagePermissions (ID BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE, PageID BIGINT UNSIGNED NOT NULL, INDEX(PageID), CONSTRAINT fk_PagePermissionsPageID FOREIGN KEY (PageID) REFERENCES Pages(ID) ON DELETE CASCADE, UserID BIGINT UNSIGNED NOT NULL, INDEX(UserID), CONSTRAINT fk_PagePermissionsUserID FOREIGN KEY (UserID) REFERENCES Users(ID) ON DELETE CASCADE, UNIQUE INDEX PageUserPair (PageID,UserID), Permissions BIGINT UNSIGNED NOT NULL DEFAULT 0);")
 	if err != nil {
 		logging.WriteLog(logging.LogLevelCritical, "MariaDBPlugin/performFreshDBInstall", "*", logging.ResultFailure, []string{"Failed to install database", err.Error()})
 		return err
@@ -110,20 +110,58 @@ func (DBConnection *MariaDBPlugin) performFreshDBInstall() error {
 
 //TODO: Add update code here
 func (DBConnection *MariaDBPlugin) upgradeDatabase(version int64) (int64, error) {
-	/*Update version 0 -> 1
+	//Update version 0 -> 1
 	if version == 0 {
-		_, err := DBConnection.DBHandle.Exec("ALTER TABLE Images ADD COLUMN (Rating VARCHAR(255) DEFAULT 'unrated');")
+		//Drop constraints
+		_, err := DBConnection.DBHandle.Exec("ALTER TABLE Pages DROP FOREIGN KEY fk_PagesPrevID;")
 		if err != nil {
-			logging.WriteLog("MariaDBPlugin", "InitDatabase", "*", "ERROR", []string{"Failed to update database columns", err.Error()})
+			logging.WriteLog(logging.LogLevelCritical, "MariaDBPlugin/upgradeDatabase", "*", logging.ResultFailure, []string{"Failed to update database", err.Error()})
 			return version, err
 		}
+		_, err = DBConnection.DBHandle.Exec("ALTER TABLE Pages DROP FOREIGN KEY fk_PagesOwnerID;")
+		if err != nil {
+			logging.WriteLog(logging.LogLevelCritical, "MariaDBPlugin/upgradeDatabase", "*", logging.ResultFailure, []string{"Failed to update database", err.Error()})
+			return version, err
+		}
+		_, err = DBConnection.DBHandle.Exec("ALTER TABLE PagePermissions DROP FOREIGN KEY fk_PagePermissionsPageID;")
+		if err != nil {
+			logging.WriteLog(logging.LogLevelCritical, "MariaDBPlugin/upgradeDatabase", "*", logging.ResultFailure, []string{"Failed to update database", err.Error()})
+			return version, err
+		}
+		_, err = DBConnection.DBHandle.Exec("ALTER TABLE PagePermissions DROP FOREIGN KEY fk_PagePermissionsUserID;")
+		if err != nil {
+			logging.WriteLog(logging.LogLevelCritical, "MariaDBPlugin/upgradeDatabase", "*", logging.ResultFailure, []string{"Failed to update database", err.Error()})
+			return version, err
+		}
+		//Then re-add them
+		_, err = DBConnection.DBHandle.Exec("ALTER TABLE Pages ADD CONSTRAINT fk_PagesPrevID FOREIGN KEY (PrevID) REFERENCES Pages(ID) ON DELETE CASCADE;")
+		if err != nil {
+			logging.WriteLog(logging.LogLevelCritical, "MariaDBPlugin/upgradeDatabase", "*", logging.ResultFailure, []string{"Failed to update database", err.Error()})
+			return version, err
+		}
+		_, err = DBConnection.DBHandle.Exec("ALTER TABLE Pages ADD CONSTRAINT fk_PagesOwnerID FOREIGN KEY (OwnerID) REFERENCES Users(ID) ON DELETE CASCADE;")
+		if err != nil {
+			logging.WriteLog(logging.LogLevelCritical, "MariaDBPlugin/upgradeDatabase", "*", logging.ResultFailure, []string{"Failed to update database", err.Error()})
+			return version, err
+		}
+		_, err = DBConnection.DBHandle.Exec("ALTER TABLE PagePermissions ADD CONSTRAINT fk_PagePermissionsPageID FOREIGN KEY (PageID) REFERENCES Pages(ID) ON DELETE CASCADE;")
+		if err != nil {
+			logging.WriteLog(logging.LogLevelCritical, "MariaDBPlugin/upgradeDatabase", "*", logging.ResultFailure, []string{"Failed to update database", err.Error()})
+			return version, err
+		}
+		_, err = DBConnection.DBHandle.Exec("ALTER TABLE PagePermissions ADD CONSTRAINT fk_PagePermissionsUserID FOREIGN KEY (UserID) REFERENCES Users(ID) ON DELETE CASCADE;")
+		if err != nil {
+			logging.WriteLog(logging.LogLevelCritical, "MariaDBPlugin/upgradeDatabase", "*", logging.ResultFailure, []string{"Failed to update database", err.Error()})
+			return version, err
+		}
+		//
 		_, err = DBConnection.DBHandle.Exec("UPDATE DBVersion SET version = 1;")
 		if err != nil {
-			logging.WriteLog("MariaDBPlugin", "InitDatabase", "*", "ERROR", []string{"Failed to update database version", err.Error()})
+			logging.WriteLog(logging.LogLevelCritical, "MariaDBPlugin/upgradeDatabase", "*", logging.ResultFailure, []string{"Failed to update database version", err.Error()})
 			return version, err
 		}
 		version = 1
-		logging.WriteLog("MariaDBPlugin", "InitDatabase", "*", "INFO", []string{"Database schema updated to version", strconv.FormatInt(version, 10)})
-	}*/
+		logging.WriteLog(logging.LogLevelInfo, "MariaDBPlugin/upgradeDatabase", "*", logging.ResultSuccess, []string{"Database schema updated to version", strconv.FormatInt(version, 10)})
+	}
 	return version, nil
 }

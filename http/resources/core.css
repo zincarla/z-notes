@@ -52,6 +52,9 @@ input[type=submit] {
 input[type=submit]:hover {
 	background-color: #98E3A8;
 }
+input[type=submit][value="Delete"]:hover {
+	background-color: #e39898;
+}
 input[type="radio"]{
 	width: auto;
 	margin: 4px 4px;
@@ -216,6 +219,24 @@ ul {
 #LibraryNavigation a {
 	color: unset;
 	text-decoration: none;
+}
+
+.confirmContainer {
+	width: 100vw;
+	height: 100vh;
+	background-color: rgba(0, 0, 0, 0.541);
+	position: fixed;
+	top:0px;
+	left: 0px;
+	z-index: 1;
+}
+
+.confirmCard {
+	position: relative;
+	top:50%;
+	height: 10em;
+	width: 20em;
+	margin: 0px auto;
 }
 
 /*Create page menu option*/

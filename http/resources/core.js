@@ -97,4 +97,14 @@ function AddCreateNodes() {
     }
 }
 
+//ShowConfirmForDelete
+function ShowConfirmForDelete(caller, message) {
+    newPrompt = document.getElementById("confirmTemplate").content.firstElementChild.cloneNode(true)
+    $(newPrompt).find("input[value='NO']").on("click", {ToRemove: newPrompt}, function(eventData) {$(eventData.data.ToRemove).remove()});
+    $(newPrompt).find("input[value='YES']").on("click", {ToSubmit: caller.parentElement}, function(eventData) {eventData.data.ToSubmit.submit()});
+    $(newPrompt).find("span").html(message);
+    $("body").get(0).appendChild(newPrompt)
+    return false;
+}
+
 $(document).ready(AddCreateNodes)
