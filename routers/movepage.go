@@ -165,7 +165,7 @@ func MovePagePostRouter(responseWriter http.ResponseWriter, request *http.Reques
 		return
 	}
 
-	newParentPage := interfaces.Page{OwnerID: TemplateInput.UserInformation.DBID} //Defaults to 0 ID
+	newParentPage := interfaces.Page{OwnerID: movingPageData.OwnerID} //Defaults to 0 ID
 	if parentPageID != 0 {
 		newParentPage, err = database.DBInterface.GetPage(parentPageID)
 		if err != nil {
@@ -175,6 +175,7 @@ func MovePagePostRouter(responseWriter http.ResponseWriter, request *http.Reques
 		}
 	}
 
+	//Verify both pages are owned by same user
 	if newParentPage.OwnerID != movingPageData.OwnerID {
 		logging.WriteLog(logging.LogLevelWarning, "movepage/MovePagePostRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Error occured moving page. The page cannot be moved outside the original user's library.", pageID, strconv.FormatUint(parentPageID, 10)})
 		redirectWithFlash(responseWriter, request, "/page/"+strconv.FormatUint(PageID, 10)+"/view", "Notes cannot be moved out of their owner's library", "moveError")
@@ -186,7 +187,7 @@ func MovePagePostRouter(responseWriter http.ResponseWriter, request *http.Reques
 		redirectWithFlash(responseWriter, request, "/page/"+strconv.FormatUint(PageID, 10)+"/view", "You cannot move a page into itself.", "moveError")
 		return
 	}
-	//Then check the parent pages
+	//Then check the parent pages, to ensure we do not create a loop in the tree
 	if newParentPage.ID != 0 { //No need to check if moving to root
 		pagePath, err := database.DBInterface.GetPagePath(newParentPage.ID, false)
 		if err != nil {
