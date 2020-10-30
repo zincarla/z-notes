@@ -360,3 +360,21 @@ func getPageResources(PageID uint64) ([]string, error) {
 	}
 	return resources, nil
 }
+
+//deleteResourceRootPath deletes the root resource path for a given page
+func deleteResourceRootPath(pageID uint64) error {
+	//Check if folder path exists
+	folderPath := getPageResourceRootPath(pageID)
+	_, err := os.Stat(folderPath)
+	if err != nil && os.IsNotExist(err) {
+		return nil //already deleted
+	} else if err != nil {
+		logging.WriteLog(logging.LogLevelWarning, "uploadrouter/deleteResourceRootPath", "", logging.ResultFailure, []string{"Error occured getting page directory", strconv.FormatUint(pageID, 10), err.Error()})
+		return err
+	}
+	err = os.RemoveAll(folderPath)
+	if err != nil {
+		logging.WriteLog(logging.LogLevelWarning, "uploadrouter/deleteResourceRootPath", "", logging.ResultFailure, []string{"Error occured deleting page directory", strconv.FormatUint(pageID, 10), err.Error()})
+	}
+	return err
+}
