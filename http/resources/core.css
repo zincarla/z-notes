@@ -138,14 +138,17 @@ ul {
 }
 
 #SideMenu {
-	min-width: 192px;
+	min-width: 350px;
 	font-size: .9em;
 	background-color: #C0EECA;
 	border-color: #98ABE3;
 	border-radius: 0px 10px 0px 0px;
 }
 #SideMenu ul {
-	padding: 0px 0px 0px .33em;
+	padding: 0px 0px 0px 1em;
+}
+#SideMenu > ul {
+	padding: 0px 0px 0px .25em;
 }
 #SideMenu #SideMenuTop, #SideMenu #SideMenuTop li {
 	border-radius: inherit;
@@ -178,7 +181,7 @@ ul {
 }
 
 #SideMenu li ul {
-	border-left: solid 2px #DC918F;
+	/*border-left: solid 2px #DC918F;*/
 }
 
 #SideMenu ul {
