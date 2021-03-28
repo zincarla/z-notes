@@ -55,38 +55,7 @@ func main() {
 	} else {
 		//Initialize DB Connection
 		database.DBInterface = &mariadbplugin.MariaDBPlugin{}
-		err = database.DBInterface.InitDatabase()
-		if err != nil {
-			logging.WriteLog(logging.LogLevelError, "main/Main", "*", logging.ResultFailure, []string{"Failed to connect to database. Will keep trying. ", err.Error()})
-			//Wait group for ending server
-			serverEndedWG := &sync.WaitGroup{}
-			serverEndedWG.Add(1)
-			//Setup basic routers and server server
-			requestRouter := mux.NewRouter()
-			requestRouter.HandleFunc("/", routers.BadConfigRouter)
-			requestRouter.HandleFunc("/resources/{file}", routers.ResourceRouter) //Required for CSS
-			server := &http.Server{
-				Handler:        requestRouter,
-				Addr:           config.Configuration.Address,
-				ReadTimeout:    config.Configuration.ReadTimeout,
-				WriteTimeout:   config.Configuration.WriteTimeout,
-				MaxHeaderBytes: config.Configuration.MaxHeaderBytes,
-			}
-			//Actually start server listener in a goroutine
-			go badConfigServerListenAndServe(serverEndedWG, server)
-			//Now we loop for database connection
-			for err != nil {
-				time.Sleep(60 * time.Second) // retry interval
-				err = database.DBInterface.InitDatabase()
-			}
-			//Kill server once we get a database connection
-			waitCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-			//Not defering cancel as this is the main function, instead calling it below after it is uneeded
-			if err := server.Shutdown(waitCtx); err != nil {
-				logging.WriteLog(logging.LogLevelError, "main/Main", "*", logging.ResultFailure, []string{"Error shutting down temp server. ", err.Error()})
-			}
-			cancel()
-		}
+		initializeDatabase()
 		logging.WriteLog(logging.LogLevelInfo, "main/Main", "*", logging.ResultSuccess, []string{"Successfully connected to database"})
 		configConfirmed = true
 	}
@@ -96,11 +65,7 @@ func main() {
 		configConfirmed = false
 		logging.WriteLog(logging.LogLevelCritical, "main/Main", "*", logging.ResultFailure, []string{"OpenID config missing"})
 	} else {
-		err = routers.InitOAuth()
-		if err != nil {
-			configConfirmed = false
-			logging.WriteLog(logging.LogLevelCritical, "main/Main", "*", logging.ResultFailure, []string{"OpenID failed to initialize", err.Error()})
-		}
+		initializeOauth()
 	}
 
 	//Verify TLS Settings
@@ -223,5 +188,77 @@ func badConfigServerListenAndServe(serverEndedWG *sync.WaitGroup, server *http.S
 	logging.WriteLog(logging.LogLevelInfo, "main/badConfigServerListenAndServe", "*", logging.ResultSuccess, []string{"Temp server now listening"})
 	if err := server.ListenAndServe(); err != http.ErrServerClosed {
 		logging.WriteLog(logging.LogLevelCritical, "main/badConfigServerListenAndServe", "*", logging.ResultFailure, []string{"Error occured on temp server stop", err.Error()})
+	}
+}
+
+//initializeDatabase Initializes the databse connection, or, spins up a temporary server while waiting for database connection
+func initializeDatabase() {
+	err := database.DBInterface.InitDatabase()
+	if err != nil {
+		logging.WriteLog(logging.LogLevelError, "main/Main", "*", logging.ResultFailure, []string{"Failed to connect to database. Will keep trying. ", err.Error()})
+		//Wait group for ending server
+		serverEndedWG := &sync.WaitGroup{}
+		serverEndedWG.Add(1)
+		//Setup basic routers and server server
+		requestRouter := mux.NewRouter()
+		requestRouter.HandleFunc("/", routers.BadConfigRouter)
+		requestRouter.HandleFunc("/resources/{file}", routers.ResourceRouter) //Required for CSS
+		server := &http.Server{
+			Handler:        requestRouter,
+			Addr:           config.Configuration.Address,
+			ReadTimeout:    config.Configuration.ReadTimeout,
+			WriteTimeout:   config.Configuration.WriteTimeout,
+			MaxHeaderBytes: config.Configuration.MaxHeaderBytes,
+		}
+		//Actually start server listener in a goroutine
+		go badConfigServerListenAndServe(serverEndedWG, server)
+		//Now we loop for database connection
+		for err != nil {
+			time.Sleep(60 * time.Second) // retry interval
+			err = database.DBInterface.InitDatabase()
+		}
+		//Kill server once we get a database connection
+		waitCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		//Not defering cancel as this is the main function, instead calling it below after it is uneeded
+		if err := server.Shutdown(waitCtx); err != nil {
+			logging.WriteLog(logging.LogLevelError, "main/Main", "*", logging.ResultFailure, []string{"Error shutting down temp server. ", err.Error()})
+		}
+		cancel()
+	}
+}
+
+//initializeOauth Initializes the oauth connection, or, spins up a temporary server while waiting for oauth confirmation
+func initializeOauth() {
+	err := routers.InitOAuth()
+	if err != nil {
+		logging.WriteLog(logging.LogLevelError, "main/Main", "*", logging.ResultFailure, []string{"Failed to connect to Oauth provider. Will keep trying. ", err.Error()})
+		//Wait group for ending server
+		serverEndedWG := &sync.WaitGroup{}
+		serverEndedWG.Add(1)
+		//Setup basic routers and server server
+		requestRouter := mux.NewRouter()
+		requestRouter.HandleFunc("/", routers.BadConfigRouter)
+		requestRouter.HandleFunc("/resources/{file}", routers.ResourceRouter) //Required for CSS
+		server := &http.Server{
+			Handler:        requestRouter,
+			Addr:           config.Configuration.Address,
+			ReadTimeout:    config.Configuration.ReadTimeout,
+			WriteTimeout:   config.Configuration.WriteTimeout,
+			MaxHeaderBytes: config.Configuration.MaxHeaderBytes,
+		}
+		//Actually start server listener in a goroutine
+		go badConfigServerListenAndServe(serverEndedWG, server)
+		//Now we loop for database connection
+		for err != nil {
+			time.Sleep(60 * time.Second) // retry interval
+			err = routers.InitOAuth()
+		}
+		//Kill server once we get a database connection
+		waitCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		//Not defering cancel as this is the main function, instead calling it below after it is uneeded
+		if err := server.Shutdown(waitCtx); err != nil {
+			logging.WriteLog(logging.LogLevelError, "main/Main", "*", logging.ResultFailure, []string{"Error shutting down temp server. ", err.Error()})
+		}
+		cancel()
 	}
 }
