@@ -62,12 +62,7 @@ input[type="radio"]{
 form {
 	width:100%;
 }
-li {
-	display:block;
-	list-style: none;
-}
 ul {
-	padding: 5px;
 	margin: 0px;
 }
 #HeadMenu {
