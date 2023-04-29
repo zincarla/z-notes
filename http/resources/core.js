@@ -107,4 +107,14 @@ function ShowConfirmForDelete(caller, message) {
     return false;
 }
 
+//
+function downloadResourceFile(callingForm) {
+    let chosenFile = callingForm.elements['File'].value;
+    if (chosenFile != "") {
+        let url = "./resources/"+chosenFile
+        window.location.href = url;
+    }
+    return false;
+}
+
 $(document).ready(AddCreateNodes)

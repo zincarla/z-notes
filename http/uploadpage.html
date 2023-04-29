@@ -10,7 +10,7 @@
 					Add to page content? <input type="checkbox" name="AutoAddFile" value="checked"/><br>
 					<input type="submit" value="Upload">
 				</form>
-				<form method="POST"  enctype="multipart/form-data" action="./file/delete" id="UploadPageForm">
+				<form method="POST" enctype="multipart/form-data" action="./file/delete" id="UploadPageForm">
 					{{.CSRF}}
 					<label>File</label>
 					<select name="File">
@@ -20,6 +20,17 @@
 					</select>
 					<br>
 					<input type="submit" value="Delete">
+				</form>
+				<form method="GET" id="DownloadPageForm" onsubmit="return downloadResourceFile(this);">
+					{{.CSRF}}
+					<label>File</label>
+					<select name="File">
+						{{range .PageResources}}
+						<option value="{{.}}">{{.}}</option>
+						{{end}}
+					</select>
+					<br>
+					<input type="submit" value="Download" >
 				</form>
 			</div>
 		</div>
