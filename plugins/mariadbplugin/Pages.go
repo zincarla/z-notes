@@ -193,7 +193,7 @@ func (DBConnection *MariaDBPlugin) SearchPages(userID uint64, searchquery string
 		return toReturn, errors.New("Limit not provided")
 	}
 
-	query := "SELECT ID, Name FROM Pages WHERE OwnerID=? AND (MATCH (Content) AGAINST (? IN BOOLEAN MODE)) LIMIT ? OFFSET ?;"
+	query := "SELECT ID, Name, Content FROM Pages WHERE OwnerID=? AND (MATCH (Content) AGAINST (? IN BOOLEAN MODE)) LIMIT ? OFFSET ?;"
 
 	//Now we have query and args, run the query
 	rows, err := DBConnection.DBHandle.Query(query, userID, searchquery, limit, offset)
@@ -206,7 +206,7 @@ func (DBConnection *MariaDBPlugin) SearchPages(userID uint64, searchquery string
 	for rows.Next() {
 		toAdd := interfaces.Page{PrevID: 0, OwnerID: userID}
 		//Parse out the data
-		err := rows.Scan(&toAdd.ID, &toAdd.Name)
+		err := rows.Scan(&toAdd.ID, &toAdd.Name, &toAdd.Content)
 		if err != nil {
 			return toReturn, err
 		}

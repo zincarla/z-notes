@@ -8,7 +8,7 @@
 				{{if .SearchResults}}
 				<ul>
 					{{range .SearchResults}}
-					<a href="/page/{{.ID}}/view"><li  class="pageMenuOption">{{.Name}}</li></a>
+					<li class="pageMenuOption"><a href="/page/{{.ID}}/view">{{.Name}}</a> <div class="searchPreview"><pre>{{.Content}}</pre></div></li>
 					{{end}}
 				</ul>
 				{{else}}

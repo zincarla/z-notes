@@ -1,8 +1,10 @@
 package routers
 
 import (
+	"html"
 	"html/template"
 	"net/http"
+	"strings"
 	"z-notes/config"
 	"z-notes/database"
 	"z-notes/logging"
@@ -37,6 +39,14 @@ func SearchRouter(responseWriter http.ResponseWriter, request *http.Request) {
 		logging.WriteLog(logging.LogLevelWarning, "pagerouter/PageRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Failed to get search results", err.Error()})
 		TemplateInput.HTMLMessage = template.HTML("Failed to get search results, internal error occured.")
 	} else {
+		for i := 0; i < len(results); i++ {
+			results[i].Content = strings.ReplaceAll(results[i].Content, "\r\n\r\n", "\r\n")
+			results[i].Content = strings.ReplaceAll(results[i].Content, "\n\n", "\n")
+			if len(results[i].Content) > 300 {
+				results[i].Content = results[i].Content[0:300] + "..."
+			}
+			results[i].Content = html.EscapeString(results[i].Content)
+		}
 		TemplateInput.SearchResults = results
 	}
 	//Send in template

@@ -393,6 +393,19 @@ video, audio {
 	height:400px;
 }
 
+.searchPreview {
+	max-height: 10em;
+	font-size: .75em;
+	background-color: #EEEEEE;
+	overflow: scroll;
+}
+
+.searchPreview pre {
+	padding: 0.2em;
+	margin: 0em;
+
+}
+
 /*Cell phone selector*/
 @media (max-device-width: 536px), (max-width: 536px) {
 	#WelcomeContainer {
