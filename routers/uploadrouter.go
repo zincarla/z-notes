@@ -9,6 +9,7 @@ import (
 	"mime"
 	"mime/multipart"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -88,7 +89,7 @@ func UploadFilePostRouter(responseWriter http.ResponseWriter, request *http.Requ
 				pageData, err := database.DBInterface.GetPage(PageID)
 				if err != nil {
 					logging.WriteLog(logging.LogLevelWarning, "uploadpage/UploadFilePostRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Error occured getting page data", pageID, err.Error()})
-					returnMessage += "Failed to add " + fileHeader.Filename + " to page content<br>"
+					returnMessage += "Failed to add " + html.EscapeString(fileHeader.Filename) + " to page content<br>"
 				} else {
 					//Add
 					//TODO: Change add method depending on file type. For now, just links
@@ -97,11 +98,11 @@ func UploadFilePostRouter(responseWriter http.ResponseWriter, request *http.Requ
 
 					switch embedMethod {
 					case embedtype.Image:
-						pageData.Content = pageData.Content + "\r\n\r\n![Uploaded Image: " + fileHeader.Filename + "](./resources/" + fileHeader.Filename + ")\r\n"
+						pageData.Content = pageData.Content + "\r\n\r\n![Uploaded Image: " + html.EscapeString(fileHeader.Filename) + "](./resources/" + url.PathEscape(fileHeader.Filename) + ")\r\n"
 						err = database.DBInterface.UpdatePage(pageData)
 						if err != nil {
 							logging.WriteLog(logging.LogLevelWarning, "uploadpage/UploadFilePostRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Error occured updating page data", pageID, err.Error()})
-							returnMessage += "Failed to add " + fileHeader.Filename + " to page content<br>"
+							returnMessage += "Failed to add " + html.EscapeString(fileHeader.Filename) + " to page content<br>"
 						}
 					case embedtype.Direct:
 						if fileHeader.Size < config.Configuration.MaxEmbedSize {
@@ -113,19 +114,19 @@ func UploadFilePostRouter(responseWriter http.ResponseWriter, request *http.Requ
 									pageData.Content = pageData.Content + "\r\n\r\n" + fileContentStr + "\r\n"
 									if err = database.DBInterface.UpdatePage(pageData); err != nil {
 										logging.WriteLog(logging.LogLevelWarning, "uploadpage/UploadFilePostRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Error occured updating page data", pageID, err.Error()})
-										returnMessage += "Failed to add " + fileHeader.Filename + " to page content<br>"
+										returnMessage += "Failed to add " + html.EscapeString(fileHeader.Filename) + " to page content<br>"
 									}
 								} else {
 									logging.WriteLog(logging.LogLevelWarning, "uploadpage/UploadFilePostRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Error occured reading file to add to page data", pageID, err.Error()})
-									returnMessage += "Failed to add " + fileHeader.Filename + " to page content<br>"
+									returnMessage += "Failed to add " + html.EscapeString(fileHeader.Filename) + " to page content<br>"
 								}
 							} else {
 								logging.WriteLog(logging.LogLevelWarning, "uploadpage/UploadFilePostRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Error occured reading file to add to page data", pageID, err.Error()})
-								returnMessage += "Failed to add " + fileHeader.Filename + " to page content<br>"
+								returnMessage += "Failed to add " + html.EscapeString(fileHeader.Filename) + " to page content<br>"
 							}
 						} else {
 							logging.WriteLog(logging.LogLevelInfo, "uploadpage/UploadFilePostRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Failed to add file to page content as file is too large", pageID})
-							returnMessage += "Failed to add " + fileHeader.Filename + " to page content, it is too large<br>"
+							returnMessage += "Failed to add " + html.EscapeString(fileHeader.Filename) + " to page content, it is too large<br>"
 						}
 					case embedtype.Code:
 						if fileHeader.Size < config.Configuration.MaxEmbedSize {
@@ -137,34 +138,34 @@ func UploadFilePostRouter(responseWriter http.ResponseWriter, request *http.Requ
 									pageData.Content = pageData.Content + "\r\n\r\n```\r\n" + fileContentStr + "\r\n```\r\n"
 									if err = database.DBInterface.UpdatePage(pageData); err != nil {
 										logging.WriteLog(logging.LogLevelWarning, "uploadpage/UploadFilePostRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Error occured updating page data", pageID, err.Error()})
-										returnMessage += "Failed to add " + fileHeader.Filename + " to page content<br>"
+										returnMessage += "Failed to add " + html.EscapeString(fileHeader.Filename) + " to page content<br>"
 									}
 								} else {
 									logging.WriteLog(logging.LogLevelWarning, "uploadpage/UploadFilePostRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Error occured reading file to add to page data", pageID, err.Error()})
-									returnMessage += "Failed to add " + fileHeader.Filename + " to page content<br>"
+									returnMessage += "Failed to add " + html.EscapeString(fileHeader.Filename) + " to page content<br>"
 								}
 							} else {
 								logging.WriteLog(logging.LogLevelWarning, "uploadpage/UploadFilePostRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Error occured reading file to add to page data", pageID, err.Error()})
-								returnMessage += "Failed to add " + fileHeader.Filename + " to page content<br>"
+								returnMessage += "Failed to add " + html.EscapeString(fileHeader.Filename) + " to page content<br>"
 							}
 						} else {
 							logging.WriteLog(logging.LogLevelInfo, "uploadpage/UploadFilePostRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Failed to add file to page content as file is too large", pageID})
-							returnMessage += "Failed to add " + fileHeader.Filename + " to page content, it is too large<br>"
+							returnMessage += "Failed to add " + html.EscapeString(fileHeader.Filename) + " to page content, it is too large<br>"
 						}
 					case embedtype.Video, embedtype.Audio:
 						mimeType := mime.TypeByExtension(filepath.Ext(fileHeader.Filename))
-						pageData.Content = pageData.Content + "\r\n\r\n![](" + mimeType + " \"./resources/" + fileHeader.Filename + "\")\r\n"
+						pageData.Content = pageData.Content + "\r\n\r\n![](" + mimeType + " \"./resources/" + url.PathEscape(fileHeader.Filename) + "\")\r\n"
 						err = database.DBInterface.UpdatePage(pageData)
 						if err != nil {
 							logging.WriteLog(logging.LogLevelWarning, "uploadpage/UploadFilePostRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Error occured updating page data", pageID, err.Error()})
-							returnMessage += "Failed to add " + fileHeader.Filename + " to page content<br>"
+							returnMessage += "Failed to add " + html.EscapeString(fileHeader.Filename) + " to page content<br>"
 						}
 					default:
-						pageData.Content = pageData.Content + "\r\n\r\n[Uploaded File: " + fileHeader.Filename + "](./resources/" + fileHeader.Filename + ")\r\n"
+						pageData.Content = pageData.Content + "\r\n\r\n[Uploaded File: " + html.EscapeString(fileHeader.Filename) + "](./resources/" + url.PathEscape(fileHeader.Filename) + ")\r\n"
 						err = database.DBInterface.UpdatePage(pageData)
 						if err != nil {
 							logging.WriteLog(logging.LogLevelWarning, "uploadpage/UploadFilePostRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Error occured updating page data", pageID, err.Error()})
-							returnMessage += "Failed to add " + fileHeader.Filename + " to page content<br>"
+							returnMessage += "Failed to add " + html.EscapeString(fileHeader.Filename) + " to page content<br>"
 						}
 					}
 				}
