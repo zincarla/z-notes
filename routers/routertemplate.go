@@ -41,6 +41,15 @@ func (ti templateInput) IsLoggedOn() bool {
 	return ti.UserInformation.OIDCSubject != "" && ti.UserInformation.OIDCIssuer != ""
 }
 
+func (ti templateInput) ParseMarkdown(markdownContent string) template.HTML {
+	parsedContent, err := GetParsedPage(markdownContent)
+	if err != nil {
+		parsedContent = template.HTML("")
+		logging.LogInterface.WriteLog(logging.LogLevelError, "routertemplate/ParseMarkdown", "", logging.ResultFailure, []string{"failed to parse provided content from template", markdownContent, err.Error()})
+	}
+	return parsedContent
+}
+
 func replyWithTemplate(templateName string, templateInputInterface interface{}, responseWriter http.ResponseWriter, request *http.Request) {
 	//Call Template
 	templateToUse := templatecache.TemplateCache

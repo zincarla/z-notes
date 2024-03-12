@@ -5,10 +5,11 @@
 			{{template "librarymenu.html" .}}
 			<div id="MainContentContainer">
 				<h2>Search Results</h2>
+				{{$TemplateRoot := .}}
 				{{if .SearchResults}}
 				<ul>
 					{{range .SearchResults}}
-					<li class="pageMenuOption"><a href="/page/{{.ID}}/view">{{.Name}}</a> <div class="searchPreview"><pre>{{.Content}}</pre></div></li>
+					<li class="pageMenuOption"><a href="/page/{{.ID}}/view">{{.Name}}</a> <div class="searchPreview">{{$TemplateRoot.ParseMarkdown .Content}}</div></li>
 					{{end}}
 				</ul>
 				{{else}}

@@ -398,12 +398,8 @@ video, audio {
 	font-size: .75em;
 	background-color: #EEEEEE;
 	overflow: scroll;
-}
-
-.searchPreview pre {
 	padding: 0.2em;
 	margin: 0em;
-
 }
 
 /*Cell phone selector*/
