@@ -1,0 +1,21 @@
+:root {
+  --bgcolor: rgb(30, 30, 30);
+  --textcolor: rgb(255, 225, 142);
+  --secondary-color: #112663;
+  --border-color: #153185;
+  --side-search-color: #22366e;
+  --primary-color: #226e34;
+  --primary-alt-color: #18642a;
+  --inputhover-color: #126323;
+  --messagebox-color: #f9f9aa;
+  --searchpreview-color:#EEEEEE;
+  --delete-color: #631111;
+  --headmenu-shadowcolor: rgb(104, 76, 0);
+  --headmenu-seperatorcolor: rgb(255, 225, 142);
+  --navihover-color: #025815;
+  --confirmbg-color: rgba(0, 0, 0, 0.541);
+
+  --footertext-color: rgb(255, 225, 142);
+  --footerbg-color: black;
+}
+

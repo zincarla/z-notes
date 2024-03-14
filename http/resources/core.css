@@ -11,7 +11,7 @@ video, audio {
 	margin: auto;
 	height: 17em;
 	border-radius: 4px;
-	border: 1px solid #98ABE3;
+	border: 1px solid var(--border-color, #98ABE3);
 	padding: 15px;
 }
 #WelcomeContainer img {
@@ -26,7 +26,7 @@ input {
 	box-sizing: border-box;
 	margin: 4px 0;
 	border-radius: 4px;
-	border: 1px solid #98ABE3;
+	border: 1px solid var(--border-color, #98ABE3);
 	padding: 2px 5px;
 	font-size: 1em;
 }
@@ -47,17 +47,21 @@ input[type="checkbox"] {
 input[type=submit] {
 	border: none;
 	cursor: pointer;
-	background-color: #C0EECA;
+	background-color: var(--primary-color,#C0EECA);
 }
 input[type=submit]:hover {
-	background-color: #98E3A8;
+	background-color: var(--inputhover-color,#98E3A8);
 }
 input[type=submit][value="Delete"]:hover {
-	background-color: #e39898;
+	background-color: var(--delete-color,#e39898);
 }
 input[type="radio"]{
 	width: auto;
 	margin: 4px 4px;
+}
+input[type="text"]{
+	color: var(--textcolor, black);
+	background-color: var(--bgcolor, white);
 }
 form {
 	width:100%;
@@ -76,11 +80,11 @@ ul {
 #HeadMenu .dropDownContent {
 	display: none;
 	position: absolute;
-	box-shadow: 0px 8px 16px 0px rgba(0,0,0);
+	box-shadow: 0px 8px 16px 0px var(--headmenu-shadowcolor, rgba(0,0,0));
+	background-color: var(--bgcolor, white);
 	padding: 12px 16px;
 	z-index: 1;
 	width:192px;
-	background-color: white;
 	left: -80%; /*Half Parent Width*/
 	font-size: .8em;
 }
@@ -89,7 +93,7 @@ ul {
 	font-size: .8em;
 	margin-bottom: 5px;
 	border-right:none;
-	border-bottom: solid 1px black;
+	border-bottom: solid 1px var(--headmenu-seperatorcolor, black);
 	display: block;
 	padding-bottom: 5px;
 	position: relative;
@@ -108,7 +112,7 @@ ul {
 }
 #HeadMenu ul li {
 	margin-right: 5px;
-	border-right: solid 1px black;
+	border-right: solid 1px var(--headmenu-seperatorcolor, black);
 	display: inline-block;
 	padding-right: 5px;
 	position: relative;
@@ -137,8 +141,8 @@ ul {
 #SideMenu {
 	min-width: 350px;
 	font-size: .9em;
-	background-color: #C0EECA;
-	border-color: #98ABE3;
+	background-color: var(--primary-color,#C0EECA);
+	border-color: var(--border-color, #98ABE3);
 	border-radius: 0px 10px 0px 0px;
 }
 #SideMenu ul {
@@ -149,20 +153,20 @@ ul {
 }
 #SideMenu #SideMenuTop, #SideMenu #SideMenuTop li {
 	border-radius: inherit;
-	background-color: #C0CCEE;
+	background-color: var(--side-search-color,#C0CCEE);
 }
 #SideMenuTop li {
-	border-bottom: #98ABE3 1px solid;
+	border-bottom: var(--secondary-color, #98ABE3) 1px solid;
 }
 #SideMenuTop li:first-of-type {
-	border-bottom: #98ABE3 1px solid;
+	border-bottom: var(--secondary-color, #98ABE3) 1px solid;
 	border-radius: inherit;
 }
 #SideMenu #SideMenuTop li:hover {
-	background-color: #98ABE3;
+	background-color: var(--secondary-color, #98ABE3);
 }
 #SideMenu a:hover {
-	background-color:#C0CCEE;
+	background-color:var(--side-search-color,#C0CCEE);
 }
 #SideMenu li {
 	text-transform: capitalize;
@@ -171,10 +175,10 @@ ul {
 	padding: 2px;
 }
 #SideMenu li:nth-child(even) {
-	background-color: #a9e4b6;
+	background-color: var(--primary-alt-color,#a9e4b6);
 }
 #SideMenu li:nth-child(odd) {
-	background-color: #C0EECA;
+	background-color: var(--primary-color,#C0EECA);
 }
 
 #SideMenu li ul {
@@ -193,14 +197,14 @@ ul {
 	width:1em;
 	text-align: center;
 	border-radius: 4px;
-	border: 1px solid #98ABE3;
+	border: 1px solid var(--border-color, #98ABE3);
 	margin-right: .1em;
 	color: black;
-	background-color: #98E3A8;
+	background-color: var(--inputhover-color,#98E3A8);
 	cursor: pointer;
 }
 .naviPlus:hover {
-	background-color: #70D886;
+	background-color: var(--navihover-color,#70D886);
 }
 .naviLabel {
 	width:100%;
@@ -208,12 +212,12 @@ ul {
 
 #LibraryNavigation {
 	border-radius: 0px 10px 0px 0px;
-	background-color:#C0EECA;
+	background-color:var(--primary-color,#C0EECA);
 
 }
 
 #LibraryNavigation li:hover {
-	background-color: #98E3A8;
+	background-color: var(--inputhover-color,#98E3A8);
 }
 
 #LibraryNavigation a {
@@ -224,7 +228,7 @@ ul {
 .confirmContainer {
 	width: 100vw;
 	height: 100vh;
-	background-color: rgba(0, 0, 0, 0.541);
+	background-color: var(--confirmbg-color, rgba(0, 0, 0, 0.541));
 	position: fixed;
 	top:0px;
 	left: 0px;
@@ -243,11 +247,11 @@ ul {
 .createPageMenuOption form{
 	display: none;
 	position: absolute;
-	box-shadow: 0px 8px 16px 0px rgba(0,0,0);
+	box-shadow: 0px 8px 16px 0px var(--headmenu-shadowcolor, black);
 	padding: 12px 16px;
 	z-index: 1;
 	width:192px;
-	background-color: white;
+	background-color: var(--bgcolor, white);
 	left: 90%; /*Offset so it overlaps parent a bit*/
 	top: -75%; 
 	box-sizing: border-box;
@@ -288,22 +292,23 @@ body, html {
 	border: 0px;
 	font-size: 20px;
 	height:100%;
-	color: black;
+	color: var(--textcolor, black);
+	background-color: var(--bgcolor, white);
 }
 #Footer {
 	text-align: right;
-	color: white;
-	background-color: lightgray;
+	color: var(--footertext-color,white);
+	background-color: var(--footerbg-color, lightgray);
 }
 #Footer a {
-	color: white;
+	color: var(--footertext-color,white);
 }
 #Footer ul {
 	margin: 0px;
 }
 #Footer ul li {
 	margin-right: 5px;
-	border-right: solid 1px white;
+	border-right: solid 1px var(--footertext-color,white);
 	display: inline-block;
 	padding-right: 5px;
 }
@@ -319,22 +324,22 @@ h1, h2, h3, h4, h5 {
 }
 h1 {
 	font-size: 2em;  
-	border-bottom: solid #98ABE3 4px;
+	border-bottom: solid var(--border-color, #98ABE3) 4px;
 }
 
 h2 {
 	font-size: 1.7em;
-	border-bottom: solid #98ABE3 3px;
+	border-bottom: solid var(--border-color, #98ABE3) 3px;
 }
 
 h3 {
 	font-size: 1.5em;
-	border-bottom: solid #98ABE3 2px;
+	border-bottom: solid var(--border-color, #98ABE3) 2px;
 }
 
 h4 {
 	font-size: 1.1em;
-	border-bottom: solid #98ABE3 1px;
+	border-bottom: solid var(--border-color, #98ABE3) 1px;
 }
 h5 {
 	font-size: 1.05em; 
@@ -346,7 +351,7 @@ h6 {
 	margin-top: .15em;
 	margin-bottom: .05em;
 	font-weight: normal;
-	text-decoration: #98ABE3 underline;
+	text-decoration: var(--secondary-color, #98ABE3) underline;
 	text-decoration-style: dotted;
 }
 .displayBlock {
@@ -356,7 +361,7 @@ h6 {
 	display:none !important;
 }
 #messageContainer {
-	background-color: #f9f9aa;
+	background-color: var(--messagebox-color,#f9f9aa);
 	border-radius: 4px;
 	padding: .5em;
 	position: absolute;
@@ -372,7 +377,7 @@ table {
 	width: 100%;
 }
 tr:nth-child(odd) {
-	background-color: #a9e4b6
+	background-color: var(--primary-alt-color,#a9e4b6)
 }
 video, audio {
 	margin: auto;
@@ -383,7 +388,7 @@ video, audio {
 	margin-right: auto;
 	border-radius: 8px;
 	padding-bottom: 1em;
-	border: solid 1px #98ABE3;
+	border: solid 1px var(--border-color, #98ABE3);
 	margin-top: 1em;
 }
 
@@ -396,7 +401,7 @@ video, audio {
 .searchPreview {
 	max-height: 10em;
 	font-size: .75em;
-	background-color: #EEEEEE;
+	background-color: var(--searchpreview-color,#EEEEEE);
 	overflow: scroll;
 	padding: 0.2em;
 	margin: 0em;

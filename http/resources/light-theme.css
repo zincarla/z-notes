@@ -1,0 +1,20 @@
+:root {
+  --bgcolor: white;
+  --textcolor: black;
+  --secondary-color: #98ABE3;
+  --border-color: #98ABE3;
+  --primary-color: #C0EECA;
+  --primary-alt-color: #a9e4b6;
+  --side-search-color: #C0CCEE;
+  --messagebox-color: #f9f9aa;
+  --searchpreview-color:#EEEEEE;
+  --delete-color: #e39898;
+  --inputhover-color: #98E3A8;
+  --headmenu-shadowcolor: black;
+  --headmenu-seperatorcolor: black;
+  --navihover-color: #70D886;
+  --confirmbg-color: rgba(0, 0, 0, 0.541);
+  
+  --footertext-color: white;
+  --footerbg-color: lightgray;
+}
