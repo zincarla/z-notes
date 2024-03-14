@@ -117,4 +117,32 @@ function downloadResourceFile(callingForm) {
     return false;
 }
 
+//Theme stuff
+let pageThemes = ["light-theme", "dark-theme"]
+let currentPageTheme=0;
+
+function SwapPageTheme() {
+    currentPageTheme+=1;
+    if (currentPageTheme >= pageThemes.length) {
+        currentPageTheme=0;
+    }
+    SetPageTheme(currentPageTheme);
+    return false;
+}
+
+function SetPageTheme(index) {
+    if (index >=0 && index < pageThemes.length) {
+        currentPageTheme = index;
+        document.documentElement.className = pageThemes[currentPageTheme];
+        localStorage.setItem('pagetheme', currentPageTheme);
+    }
+}
+
+function LoadPageTheme() {
+    SetPageTheme(parseInt(localStorage.getItem('pagetheme')));
+}
+
+LoadPageTheme();
+//End Theme Stuff
+
 $(document).ready(AddCreateNodes)

@@ -36,7 +36,18 @@
 					</div>
 				</li>
 				{{end}}
-				<li>Profile<div class="dropDownContent" id="logoutDDC"><a href="/openidc/logout">Logout</a></div></li>
+				<li>Profile
+					<div class="dropDownContent" id="logoutDDC">
+						<ul>
+							<li>
+								<a onclick="return SwapPageTheme();" href="#">Change Theme</a>
+							</li>
+							<li>
+								<a href="/openidc/logout">Logout</a>
+							</li>
+						</ul>
+					</div>
+				</li>
 				{{end}}
 				<li><a href="/about/about.html">About</li></a>
 			</ul>
