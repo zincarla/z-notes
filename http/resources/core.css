@@ -210,6 +210,10 @@ ul {
 .naviLabel {
 	width:100%;
 }
+#PageMenu {
+	width: 100%;
+	text-align: center;
+}
 
 #LibraryNavigation {
 	border-radius: 0px 10px 0px 0px;

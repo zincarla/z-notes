@@ -9,9 +9,12 @@
 				{{if .SearchResults}}
 				<ul>
 					{{range .SearchResults}}
-					<li class="pageMenuOption"><a href="/page/{{.ID}}/revision/{{.RevisionID}}">{{.Name}}</a> <div class="searchPreview">{{$TemplateRoot.ParseMarkdown .Content}}</div></li>
+					<li class="pageMenuOption"><a href="/page/{{.ID}}/revision/{{.RevisionID}}">{{.Name}} [{{.RevisionTime}}]</a> <div class="searchPreview">{{$TemplateRoot.ParseMarkdown .Content}}</div></li>
 					{{end}}
 				</ul>
+				<div id="PageMenu">
+					{{.PageMenu}}
+				</div>
 				{{else}}
 					No revisions found.
 				{{end}}

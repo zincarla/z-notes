@@ -31,8 +31,8 @@ type DBInterface interface {
 	GetRootPages(userID uint64) ([]Page, error)
 	//SearchPages returns incomplete page data for for pages that match the supplied query
 	SearchPages(userID uint64, query string, limit uint64, offset uint64) ([]Page, error)
-	//GetPageRevisions returns a slice of page revisions given a pageID
-	GetPageRevisions(pageID uint64, limit uint64, offset uint64) ([]Page, error)
+	//GetPageRevisions returns a slice of page revisions given a pageID, the total revisions
+	GetPageRevisions(pageID uint64, limit uint64, offset uint64) ([]Page, uint64, error)
 	//GetPageRevision returns specific page revision (Incomplete as revisions only contain partial information)
 	GetPageRevision(pageID uint64, revisionID uint64) (Page, error)
 

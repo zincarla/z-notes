@@ -220,32 +220,38 @@ func (DBConnection *MariaDBPlugin) SearchPages(userID uint64, searchquery string
 }
 
 //GetPageRevisions returns a slice of page revisions given a pageID
-func (DBConnection *MariaDBPlugin) GetPageRevisions(pageID uint64, limit uint64, offset uint64) ([]interfaces.Page, error) {
+func (DBConnection *MariaDBPlugin) GetPageRevisions(pageID uint64, limit uint64, offset uint64) ([]interfaces.Page, uint64, error) {
 	var toReturn []interfaces.Page
 	if pageID == 0 {
-		return toReturn, errors.New("Page ID not provided")
+		return toReturn, 0, errors.New("Page ID not provided")
 	}
 	if limit == 0 {
-		return toReturn, errors.New("Limit not provided")
+		return toReturn, 0, errors.New("Limit not provided")
 	}
 
-	query := "SELECT ID, Name, Content, UpdateTime FROM PageRevisions WHERE PageID=? LIMIT ? OFFSET ?;"
+	MaxCount, err := DBConnection.GetPageRevisionCount(pageID)
+	if err != nil {
+		return toReturn, MaxCount, errors.New("failed to get count in subquery: " + err.Error())
+	}
+
+	query := "SELECT ID, Name, Content, UpdateTime FROM PageRevisions WHERE PageID=? ORDER BY ID DESC LIMIT ? OFFSET ?;"
 
 	//Now we have query and args, run the query
 	rows, err := DBConnection.DBHandle.Query(query, pageID, limit, offset)
 	if err != nil {
-		return toReturn, err
+		return toReturn, MaxCount, err
 	}
 	defer rows.Close()
 
 	//For each row
 	for rows.Next() {
 		var RevisionTime mysql.NullTime
+
 		toAdd := interfaces.Page{PrevID: 0, ID: pageID}
 		//Parse out the data
 		err := rows.Scan(&toAdd.RevisionID, &toAdd.Name, &toAdd.Content, &RevisionTime)
 		if err != nil {
-			return toReturn, err
+			return toReturn, MaxCount, err
 		}
 		if RevisionTime.Valid {
 			toAdd.RevisionTime = RevisionTime.Time
@@ -254,7 +260,24 @@ func (DBConnection *MariaDBPlugin) GetPageRevisions(pageID uint64, limit uint64,
 		toReturn = append(toReturn, toAdd)
 	}
 
-	return toReturn, nil
+	return toReturn, MaxCount, nil
+}
+
+//GetPageRevisionCount returns a count of page revisions given a pageID
+func (DBConnection *MariaDBPlugin) GetPageRevisionCount(pageID uint64) (uint64, error) {
+	var ToReturn uint64
+	if pageID == 0 {
+		return ToReturn, errors.New("Page ID not provided")
+	}
+
+	query := "SELECT COUNT(ID) FROM PageRevisions WHERE PageID=?;"
+
+	//Now we have query and args, run the query
+	err := DBConnection.DBHandle.QueryRow(query, pageID).Scan(&ToReturn)
+	if err != nil {
+		return ToReturn, err
+	}
+	return ToReturn, nil
 }
 
 //GetPageRevision returns specific page revision (Incomplete as revisions only contain partial information)

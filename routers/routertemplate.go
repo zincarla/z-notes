@@ -1,9 +1,12 @@
 package routers
 
 import (
+	"errors"
 	"html/template"
+	"math"
 	"net"
 	"net/http"
+	"strconv"
 	"time"
 	"z-notes/config"
 	"z-notes/interfaces"
@@ -21,6 +24,7 @@ type templateInput struct {
 	PageData              interfaces.Page
 	MovingParentPageData  interfaces.Page
 	SearchResults         []interfaces.Page
+	PageMenu              template.HTML
 	BreadCrumbRoot        interfaces.Page
 	AllowAccountCreation  bool
 	AccountRequiredToView bool
@@ -133,4 +137,43 @@ func redirectWithFlash(responseWriter http.ResponseWriter, request *http.Request
 	err := createFlash(responseWriter, request, flashMessage, flashName)
 	http.Redirect(responseWriter, request, redirectURL+"?flash="+flashName, http.StatusFound)
 	return err
+}
+
+//GeneratePageMenu generates a template.HTML menu given a few numbers. Returns a menu like "<< 1, 2, 3, [4], 5, 6, 7 >>"
+func GeneratePageMenu(Offset int64, Stride int64, Max int64, PageURL string) (template.HTML, error) {
+	//Validate parameters
+	if Offset < 0 || Stride <= 0 || Max < 0 || Offset > Max {
+		return template.HTML(""), errors.New("Parameters must be positive numbers")
+	}
+	if Max == 0 {
+		return template.HTML("1"), nil
+	}
+
+	//Jump to top of results
+	ToReturn := "<a href=\"" + PageURL + "\">&#x3C;&#x3C;</a>"
+	//Max possible page number
+	maxPage := int64(math.Ceil(float64(Max) / float64(Stride)))
+	lastPage := maxPage
+	//Current page number
+	currentPage := int64(math.Floor(float64(Offset)/float64(Stride)) + 1)
+	//Minimum page number we will show
+	minPage := currentPage - 3
+	if minPage < 1 {
+		minPage = 1
+	}
+	if maxPage > currentPage+3 {
+		maxPage = currentPage + 3
+	}
+
+	for processPage := minPage; processPage <= maxPage; processPage++ {
+		if processPage != currentPage {
+			ToReturn = ToReturn + ", <a href=\"" + PageURL + "?searchPage=" + strconv.FormatInt(processPage, 10) + "\">" + strconv.FormatInt(processPage, 10) + "</a>"
+		} else {
+			ToReturn = ToReturn + ", " + strconv.FormatInt(currentPage, 10)
+		}
+	}
+
+	//Add end
+	ToReturn = ToReturn + ", <a href=\"" + PageURL + "?searchPage=" + strconv.FormatInt(lastPage, 10) + "\">&#x3E;&#x3E;</a>"
+	return template.HTML(ToReturn), nil
 }
