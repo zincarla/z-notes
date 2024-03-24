@@ -12,11 +12,16 @@
 					<div class="dropDownContent" id="noteDDC">
 						<ul>
 							<li>
-								<a href="/page/{{.PageData.ID}}/view">View</a>
+								<a href="/page/{{.PageData.ID}}/view">View{{if ne .PageData.RevisionID 0}} Current{{end}}</a>
 							</li>
 							<li>
 								<a href="/page/{{.PageData.ID}}/edit">Edit</a>
 							</li>
+							{{if ne .PageData.RevisionID 0}}
+							<li>
+								<a href="/page/{{.PageData.ID}}/edit?revisionID={{.PageData.RevisionID}}">Edit from Revision</a>
+							</li>
+							{{end}}
 							<li>
 								<a href="/page/{{.PageData.ID}}/file">Files</a>
 							</li>
@@ -27,9 +32,12 @@
 								<a href="/page/{{.PageData.ID}}/move?ParentPageID={{.PageData.PrevID}}">Move</a>
 							</li>
 							<li>
+								<a href="/page/{{.PageData.ID}}/revisions">Revisions</a>
+							</li>
+							<li>
 								<form action="/page/{{.PageData.ID}}/delete" method="POST">
 									{{.CSRF}}
-									<input type="submit" value="Delete" onclick="return ShowConfirmForDelete(this,'This will also delete all child notes!');">
+									<input type="submit" value="Delete" onclick="return ShowConfirmForDelete(this,'This will also delete all child notes, files, the current and previous revisions!');">
 								</form>
 							</li>
 						</ul>
@@ -70,6 +78,9 @@
 					{{end}}
 					{{if eq (len .PageData.Children) 0}}
 					<li><a href="/page/{{.PageData.ID}}/view">{{.PageData.Name}}</a></li>
+					{{end}}
+					{{if ne .PageData.RevisionID 0}}
+					<li><a href="/page/{{.PageData.ID}}/revision/{{.PageData.RevisionID}}">[Revision: {{.PageData.RevisionTime}}] {{.PageData.Name}}</a></li>
 					{{end}}
 				{{else}}
 				<li>&nbsp;</li>

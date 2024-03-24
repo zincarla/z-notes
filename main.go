@@ -93,6 +93,9 @@ func main() {
 		requestRouter.HandleFunc("/openidc/logout", routers.AuthLogoutRouter).Methods("GET")
 
 		requestRouter.HandleFunc("/page/{pageID}/view", routers.PageRouter).Methods("GET")
+		requestRouter.HandleFunc("/page/{pageID}/revisions", routers.RevisionRouter).Methods("GET")
+		requestRouter.HandleFunc("/page/{pageID}/revision/{revisionID}", routers.RevisionViewRouter).Methods("GET")
+		requestRouter.HandleFunc("/page/{pageID}/revision/resources/{resource}", routers.PageResourceRouter).Methods("GET") //Hack to get revision files to load
 		requestRouter.HandleFunc("/page/{pageID}/resources/{resource}", routers.PageResourceRouter).Methods("GET")
 		requestRouter.HandleFunc("/createpage", routers.CreatePageRouter).Methods("POST")
 		requestRouter.HandleFunc("/search", routers.SearchRouter).Methods("GET")

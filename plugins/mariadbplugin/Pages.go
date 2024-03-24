@@ -3,6 +3,8 @@ package mariadbplugin
 import (
 	"errors"
 	"z-notes/interfaces"
+
+	"github.com/go-sql-driver/mysql"
 )
 
 //CreatePage is used to create a new page (return nil on success)
@@ -215,4 +217,63 @@ func (DBConnection *MariaDBPlugin) SearchPages(userID uint64, searchquery string
 	}
 
 	return toReturn, nil
+}
+
+//GetPageRevisions returns a slice of page revisions given a pageID
+func (DBConnection *MariaDBPlugin) GetPageRevisions(pageID uint64, limit uint64, offset uint64) ([]interfaces.Page, error) {
+	var toReturn []interfaces.Page
+	if pageID == 0 {
+		return toReturn, errors.New("Page ID not provided")
+	}
+	if limit == 0 {
+		return toReturn, errors.New("Limit not provided")
+	}
+
+	query := "SELECT ID, Name, Content, UpdateTime FROM PageRevisions WHERE PageID=? LIMIT ? OFFSET ?;"
+
+	//Now we have query and args, run the query
+	rows, err := DBConnection.DBHandle.Query(query, pageID, limit, offset)
+	if err != nil {
+		return toReturn, err
+	}
+	defer rows.Close()
+
+	//For each row
+	for rows.Next() {
+		var RevisionTime mysql.NullTime
+		toAdd := interfaces.Page{PrevID: 0, ID: pageID}
+		//Parse out the data
+		err := rows.Scan(&toAdd.RevisionID, &toAdd.Name, &toAdd.Content, &RevisionTime)
+		if err != nil {
+			return toReturn, err
+		}
+		if RevisionTime.Valid {
+			toAdd.RevisionTime = RevisionTime.Time
+		}
+		//Add this result to ToReturn
+		toReturn = append(toReturn, toAdd)
+	}
+
+	return toReturn, nil
+}
+
+//GetPageRevision returns specific page revision (Incomplete as revisions only contain partial information)
+func (DBConnection *MariaDBPlugin) GetPageRevision(pageID uint64, revisionID uint64) (interfaces.Page, error) {
+	toReturn := interfaces.Page{ID: pageID, RevisionID: revisionID}
+	if pageID == 0 {
+		return toReturn, errors.New("Page ID not provided")
+	}
+	if revisionID == 0 {
+		return toReturn, errors.New("Revision ID not provided")
+	}
+
+	query := "SELECT Name, Content, UpdateTime FROM PageRevisions WHERE PageID=? AND ID=?;"
+
+	//Now we have query and args, run the query
+	var RevisionTime mysql.NullTime
+	err := DBConnection.DBHandle.QueryRow(query, pageID, revisionID).Scan(&toReturn.Name, &toReturn.Content, &RevisionTime)
+	if RevisionTime.Valid {
+		toReturn.RevisionTime = RevisionTime.Time
+	}
+	return toReturn, err
 }

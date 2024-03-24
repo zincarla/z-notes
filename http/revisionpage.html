@@ -1,0 +1,20 @@
+{{template "header.html" .}}
+	<body>
+		{{template "headMenu.html" .}}
+		<div id="BodyContent">
+			{{template "librarymenu.html" .}}
+			<div id="MainContentContainer">
+				<h2>Revisions</h2>
+				{{$TemplateRoot := .}}
+				{{if .SearchResults}}
+				<ul>
+					{{range .SearchResults}}
+					<li class="pageMenuOption"><a href="/page/{{.ID}}/revision/{{.RevisionID}}">{{.Name}}</a> <div class="searchPreview">{{$TemplateRoot.ParseMarkdown .Content}}</div></li>
+					{{end}}
+				</ul>
+				{{else}}
+					No revisions found.
+				{{end}}
+			</div>
+		</div>
+{{template "footer.html" .}}
