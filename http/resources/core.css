@@ -1,6 +1,9 @@
 div, textarea {
 	box-sizing: border-box;
 }
+a {
+	color: unset;
+}
 video, audio {
 	display: block;
 	max-width: 100%;
@@ -73,9 +76,6 @@ ul {
 #HeadMenu {
 	width:100%;
 	text-align: center;
-}
-#HeadMenu a {
-	color: unset;
 }
 
 #HeadMenu .dropDownContent {
