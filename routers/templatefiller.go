@@ -87,6 +87,9 @@ func FillTemplatePageData(PageID uint64, TemplateInput *templateInput) error {
 	TemplateInput.PageData = pageData
 
 	//Grab path for breadcrumbs
+	if TemplateInput.UserInformation.DBID <= 0 {
+		return nil // Implies anonymous user
+	}
 	err = GetCrumbs(TemplateInput, true)
 	if err != nil {
 		logging.WriteLog(logging.LogLevelError, "templateinputhelpers/FillTemplatePageData", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Failed to get page crumbs from database", err.Error()})

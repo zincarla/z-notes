@@ -127,7 +127,7 @@ func SecurityPagePostRouter(responseWriter http.ResponseWriter, request *http.Re
 	}
 
 	userToEdit, err = database.DBInterface.GetUser(userToEdit)
-	if err = userToEdit.SetName(request.FormValue("UserName")); err != nil {
+	if err != nil {
 		//If any error occurs, log it and respond with redirect
 		logging.WriteLog(logging.LogLevelWarning, "permissionpage/permissionpagePostRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"UserName provided does not exist", urlVariables["pageID"], request.FormValue("UserName"), err.Error()})
 		redirectWithFlash(responseWriter, request, "/page/"+strconv.FormatUint(PageID, 10)+"/security", "User not found", "secError")

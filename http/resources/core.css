@@ -38,6 +38,7 @@ input[type="checkbox"] {
 	width: unset;
 	width: 0.8em;
 	height: 0.8em;
+	margin-right: 0.2em;
 }
 #splashForm input {
 	margin: 8px 0;
@@ -241,6 +242,11 @@ ul {
 	height: 10em;
 	width: 20em;
 	margin: 0px auto;
+}
+
+p.explanationText {
+	margin:0px;
+	padding-left: 2em;
 }
 
 /*Create page menu option*/
