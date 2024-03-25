@@ -120,6 +120,9 @@ func main() {
 
 		//API routers
 		requestRouter.HandleFunc("/api/notes/{pageID}/children", api.NoteChildrenGetAPIRouter).Methods("GET")
+		requestRouter.HandleFunc("/api/notes/{pageID}", api.NoteGetAPIRouter).Methods("GET")
+		requestRouter.HandleFunc("/api/notes/{pageID}", api.NotePostAPIRouter).Methods("POST")
+		requestRouter.HandleFunc("/api", api.CSRFAPIRouter).Methods("GET")
 		//requestRouter.HandleFunc("/api/Logout", api.LogoutAPIRouter)
 		//requestRouter.HandleFunc("/api/Users", api.UsersAPIRouter)
 
@@ -131,7 +134,7 @@ func main() {
 	requestRouter.Use(routers.LogMiddleware)
 
 	//Setup csrf protected routers
-	csrfRequestRouter := csrf.Protect(config.Configuration.CSRFKey, csrf.RequestHeader("Authenticity-Token"))(requestRouter)
+	csrfRequestRouter := csrf.Protect(config.Configuration.CSRFKey, csrf.Secure(!config.Configuration.InSecureCSRF), csrf.ErrorHandler(http.HandlerFunc(routers.CSRFErrorRouter)))(requestRouter)
 
 	//Create server
 	server := &http.Server{

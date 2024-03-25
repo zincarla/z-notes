@@ -35,6 +35,8 @@ type ConfigurationSettings struct {
 	SessionStoreKey [][]byte
 	//CSRFKey stores the master key for CSRF token
 	CSRFKey []byte
+	//InSecureCSRF does not protect CSRF. Use for testing only.
+	InSecureCSRF bool
 	//HTTPRoot directory where template and html files are kept
 	HTTPRoot string
 	//MaxUploadBytes maximum allowed bytes for an upload

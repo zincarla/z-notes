@@ -55,7 +55,7 @@ func (ti APIData) IsLoggedOn() bool {
 
 //IsLoggedOnToken returns whether the APIData is auth'd by token
 func (ti APIData) IsLoggedOnToken() bool {
-	return (ti.TokenInformation.ID != 0 && ti.TokenInformation.OwnerID != 0 && (ti.TokenInformation.ExpirationTime.After(time.Now())))
+	return (ti.TokenInformation.ID != 0 && ti.TokenInformation.OwnerID != 0 && (ti.TokenInformation.ExpirationTime.After(time.Now()) || ti.TokenInformation.Expires == false))
 }
 
 //IsLoggedOnUser returns whether the APIData is to be treated as logged in by user account
@@ -134,7 +134,7 @@ func GetAPIData(responseWriter http.ResponseWriter, request *http.Request) APIDa
 			if err != nil {
 				logging.WriteLog(logging.LogLevelError, "apiroot/GetAPIData", "", logging.ResultFailure, []string{"error getting api token", apiKey, err.Error()})
 			} else {
-				if tokenInfo.Expires && tokenInfo.ExpirationTime.After(time.Now()) {
+				if tokenInfo.Expires == false || tokenInfo.ExpirationTime.After(time.Now()) {
 					NewData.TokenInformation = tokenInfo
 					NewData.UserInformation = interfaces.UserInformation{}
 				} //Otherwise, token has expired
@@ -145,7 +145,7 @@ func GetAPIData(responseWriter http.ResponseWriter, request *http.Request) APIDa
 	//Add IP to user info
 	NewData.UserInformation.IP, _, err = net.SplitHostPort(request.RemoteAddr)
 	if err != nil {
-		NewData.UserInformation.IP = request.RemoteAddr
+		logging.WriteLog(logging.LogLevelWarning, "apiroot/GetAPIData", "", logging.ResultFailure, []string{"failed to get remote IP", err.Error()})
 	}
 
 	return NewData
@@ -170,4 +170,13 @@ func GetAPIDataAccess(apiData APIData, PageID uint64) (interfaces.PageAccessCont
 		return ToReturn, errors.New("apiData is not logged in")
 	}
 	return ToReturn, nil
+}
+
+//CSRFAPIRouter serves get requests to /api
+func CSRFAPIRouter(responseWriter http.ResponseWriter, request *http.Request) {
+	NewData := APIData{Version: config.ApplicationVersion,
+		RequestStart: time.Now()}
+
+	responseWriter.Header().Set("X-CSRF-Token", csrf.Token(request))
+	ReplyWithJSON(responseWriter, request, GenericResponse{Result: csrf.Token(request)}, NewData)
 }
