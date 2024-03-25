@@ -48,6 +48,28 @@ type DBInterface interface {
 	//GetEffectivePermission returns the effective permissions for a user on a page, this takes into account inherited permissions
 	GetEffectivePermission(pageAccess UserPageAccess) (UserPageAccess, error)
 
+	////Tokens
+	//CreateToken creates a new token owned by the specified ownerID, returns APITokenInformation, and/or an error
+	CreateToken(tokenInfo APITokenInformation) (APITokenInformation, error)
+	//GetToken returns a token based on FriendlyID
+	GetToken(tokenID string) (APITokenInformation, error)
+	//GetTokens returns a slice of tokens based on UserID
+	GetTokens(userID uint64) ([]APITokenInformation, error)
+	//RefreshToken refreshes a token by crating a new tokenFriendlyID returns the new tokenFriendlyID, and/or an error
+	RefreshToken(tokenInfo APITokenInformation) (APITokenInformation, error)
+	////TokenPermissions
+	/*
+		//UpdateTokenPermission creates or updates a pagepermission for tokens
+		UpdateTokenPermission(permission TokenPageAccess) error
+		//RemoveTokenPermission removes a PagePermission for a token (error nil on success)
+		RemoveTokenPermission(permissionID uint64) error
+		//GetTokenPermissions returns the token permissions assigned directly to a page with the given id
+		GetTokenPermissions(pageID uint64) ([]TokenPageAccess, error)
+		//GetTokenPermission returns the token permission assigned directly to a page
+		GetTokenPermission(pageAccess UserPageAccess) (TokenPageAccess, error)
+		//GetEffectiveTokenPermission returns the effective permissions for a token on a page, this takes into account inherited permissions
+		GetEffectiveTokenPermission(pageAccess TokenPageAccess) (TokenPageAccess, error)*/
+
 	//Maitenance
 	//InitDatabase connects to a database, and if needed, creates and or updates tables
 	InitDatabase() error

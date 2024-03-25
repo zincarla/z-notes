@@ -104,8 +104,20 @@ func (DBConnection *MariaDBPlugin) performFreshDBInstall() error {
 		logging.WriteLog(logging.LogLevelCritical, "MariaDBPlugin/performFreshDBInstall", "*", logging.ResultFailure, []string{"Failed to install database", err.Error()})
 		return err
 	}
+	//Tokens
+	_, err = DBConnection.DBHandle.Exec("CREATE TABLE APITokens (ID BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE, FriendlyID VARCHAR(255) NOT NULL UNIQUE, INDEX(FriendlyID), OwnerID BIGINT UNSIGNED NOT NULL, INDEX(OwnerID), CONSTRAINT fk_APITokensOwnerID FOREIGN KEY (OwnerID) REFERENCES Users(ID) ON DELETE CASCADE, CreationTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, ExpireTime TIMESTAMP);")
+	if err != nil {
+		logging.WriteLog(logging.LogLevelCritical, "MariaDBPlugin/performFreshDBInstall", "*", logging.ResultFailure, []string{"Failed to install user table in database", err.Error()})
+		return err
+	}
 	//PagePermissions
 	_, err = DBConnection.DBHandle.Exec("CREATE TABLE PagePermissions (ID BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE, PageID BIGINT UNSIGNED NOT NULL, INDEX(PageID), CONSTRAINT fk_PagePermissionsPageID FOREIGN KEY (PageID) REFERENCES Pages(ID) ON DELETE CASCADE, UserID BIGINT UNSIGNED NOT NULL, INDEX(UserID), CONSTRAINT fk_PagePermissionsUserID FOREIGN KEY (UserID) REFERENCES Users(ID) ON DELETE CASCADE, UNIQUE INDEX PageUserPair (PageID,UserID), Permissions BIGINT UNSIGNED NOT NULL DEFAULT 0);")
+	if err != nil {
+		logging.WriteLog(logging.LogLevelCritical, "MariaDBPlugin/performFreshDBInstall", "*", logging.ResultFailure, []string{"Failed to install database", err.Error()})
+		return err
+	}
+	////PageTokenPermissions
+	_, err = DBConnection.DBHandle.Exec("CREATE TABLE PageTokenPermissions (ID BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE, PageID BIGINT UNSIGNED NOT NULL, INDEX(PageID), CONSTRAINT fk_PageTokenPermissionsPageID FOREIGN KEY (PageID) REFERENCES Pages(ID) ON DELETE CASCADE, TokenID BIGINT UNSIGNED NOT NULL, INDEX(TokenID), CONSTRAINT fk_PageTokenPermissionsTokenID FOREIGN KEY (TokenID) REFERENCES APITokens(ID) ON DELETE CASCADE, UNIQUE INDEX PageTokenPair (PageID,TokenID), Permissions BIGINT UNSIGNED NOT NULL DEFAULT 0);")
 	if err != nil {
 		logging.WriteLog(logging.LogLevelCritical, "MariaDBPlugin/performFreshDBInstall", "*", logging.ResultFailure, []string{"Failed to install database", err.Error()})
 		return err
@@ -185,12 +197,6 @@ func (DBConnection *MariaDBPlugin) upgradeDatabase(version int64) (int64, error)
 			logging.WriteLog(logging.LogLevelCritical, "MariaDBPlugin/performFreshDBInstall", "*", logging.ResultFailure, []string{"Failed to install database", err.Error()})
 			return version, err
 		}
-		//
-		_, err = DBConnection.DBHandle.Exec("UPDATE DBVersion SET version = 2;")
-		if err != nil {
-			logging.WriteLog(logging.LogLevelCritical, "MariaDBPlugin/upgradeDatabase", "*", logging.ResultFailure, []string{"Failed to update database version", err.Error()})
-			return version, err
-		}
 		_, err = DBConnection.DBHandle.Exec(`CREATE TRIGGER IF NOT EXISTS CreateRevisionOnUpdate BEFORE UPDATE ON Pages
 		FOR EACH ROW
 		BEGIN
@@ -201,7 +207,35 @@ func (DBConnection *MariaDBPlugin) upgradeDatabase(version int64) (int64, error)
 			logging.WriteLog(logging.LogLevelCritical, "MariaDBPlugin/performFreshDBInstall", "*", logging.ResultFailure, []string{"Failed to install database", err.Error()})
 			return version, err
 		}
+		//
+		_, err = DBConnection.DBHandle.Exec("UPDATE DBVersion SET version = 2;")
+		if err != nil {
+			logging.WriteLog(logging.LogLevelCritical, "MariaDBPlugin/upgradeDatabase", "*", logging.ResultFailure, []string{"Failed to update database version", err.Error()})
+			return version, err
+		}
 		version = 2
+		logging.WriteLog(logging.LogLevelInfo, "MariaDBPlugin/upgradeDatabase", "*", logging.ResultSuccess, []string{"Database schema updated to version", strconv.FormatInt(version, 10)})
+	}
+	if version == 2 {
+		//Tokens
+		_, err := DBConnection.DBHandle.Exec("CREATE TABLE APITokens (ID BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE, FriendlyID VARCHAR(255) NOT NULL UNIQUE, INDEX(FriendlyID), OwnerID BIGINT UNSIGNED NOT NULL, INDEX(OwnerID), CONSTRAINT fk_APITokensOwnerID FOREIGN KEY (OwnerID) REFERENCES Users(ID) ON DELETE CASCADE, CreationTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, ExpireTime TIMESTAMP);")
+		if err != nil {
+			logging.WriteLog(logging.LogLevelCritical, "MariaDBPlugin/performFreshDBInstall", "*", logging.ResultFailure, []string{"Failed to install user table in database", err.Error()})
+			return version, err
+		}
+		////PageTokenPermissions
+		_, err = DBConnection.DBHandle.Exec("CREATE TABLE PageTokenPermissions (ID BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE, PageID BIGINT UNSIGNED NOT NULL, INDEX(PageID), CONSTRAINT fk_PageTokenPermissionsPageID FOREIGN KEY (PageID) REFERENCES Pages(ID) ON DELETE CASCADE, TokenID BIGINT UNSIGNED NOT NULL, INDEX(TokenID), CONSTRAINT fk_PageTokenPermissionsTokenID FOREIGN KEY (TokenID) REFERENCES APITokens(ID) ON DELETE CASCADE, UNIQUE INDEX PageTokenPair (PageID,TokenID), Permissions BIGINT UNSIGNED NOT NULL DEFAULT 0);")
+		if err != nil {
+			logging.WriteLog(logging.LogLevelCritical, "MariaDBPlugin/performFreshDBInstall", "*", logging.ResultFailure, []string{"Failed to install database", err.Error()})
+			return version, err
+		}
+		//
+		_, err = DBConnection.DBHandle.Exec("UPDATE DBVersion SET version = 3;")
+		if err != nil {
+			logging.WriteLog(logging.LogLevelCritical, "MariaDBPlugin/upgradeDatabase", "*", logging.ResultFailure, []string{"Failed to update database version", err.Error()})
+			return version, err
+		}
+		version = 3
 		logging.WriteLog(logging.LogLevelInfo, "MariaDBPlugin/upgradeDatabase", "*", logging.ResultSuccess, []string{"Database schema updated to version", strconv.FormatInt(version, 10)})
 	}
 	return version, nil

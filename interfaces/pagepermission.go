@@ -82,3 +82,11 @@ type UserPageAccess struct {
 	PageID uint64
 	Access PageAccessControl
 }
+
+//TokenPageAccess represents a single access entry for a token on a page
+type TokenPageAccess struct {
+	ID     uint64
+	Token  APITokenInformation
+	PageID uint64
+	Access PageAccessControl
+}
