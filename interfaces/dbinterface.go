@@ -57,6 +57,8 @@ type DBInterface interface {
 	GetTokens(userID uint64) ([]APITokenInformation, error)
 	//RefreshToken refreshes a token by crating a new tokenFriendlyID returns the new tokenFriendlyID, and/or an error
 	RefreshToken(tokenInfo APITokenInformation) (APITokenInformation, error)
+	//RemoveToken deletes a token from the database
+	RemoveToken(tokenFriendlyID string) error
 	////TokenPermissions
 	//UpdateTokenPermission creates or updates a pagepermission for tokens
 	UpdateTokenPermission(permission TokenPageAccess) error
@@ -65,7 +67,7 @@ type DBInterface interface {
 	//GetTokenPermissions returns the token permissions assigned directly to a page with the given id
 	GetTokenPermissions(pageID uint64) ([]TokenPageAccess, error)
 	//GetTokenPermission returns the token permission assigned directly to a page
-	GetTokenPermission(pageAccess UserPageAccess) (TokenPageAccess, error)
+	GetTokenPermission(pageAccess TokenPageAccess) (TokenPageAccess, error)
 	//GetEffectiveTokenPermission returns the effective permissions for a token on a page, this takes into account inherited permissions
 	GetEffectiveTokenPermission(pageAccess TokenPageAccess) (TokenPageAccess, error)
 

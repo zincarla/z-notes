@@ -15,7 +15,7 @@ import (
 )
 
 //TODO: Increment this whenever we alter the DB Schema, ensure you attempt to add update code below
-var currentDBVersion int64 = 2
+var currentDBVersion int64 = 3
 
 //TODO: Increment this when we alter the db schema and don't add update code to compensate
 var minSupportedDBVersion int64 // 0 by default
@@ -105,7 +105,7 @@ func (DBConnection *MariaDBPlugin) performFreshDBInstall() error {
 		return err
 	}
 	//Tokens
-	_, err = DBConnection.DBHandle.Exec("CREATE TABLE APITokens (ID BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE, FriendlyID VARCHAR(255) NOT NULL UNIQUE, INDEX(FriendlyID), OwnerID BIGINT UNSIGNED NOT NULL, INDEX(OwnerID), CONSTRAINT fk_APITokensOwnerID FOREIGN KEY (OwnerID) REFERENCES Users(ID) ON DELETE CASCADE, CreationTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, ExpireTime TIMESTAMP);")
+	_, err = DBConnection.DBHandle.Exec("CREATE TABLE APITokens (ID BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE, FriendlyID VARCHAR(255) NOT NULL UNIQUE, INDEX(FriendlyID), OwnerID BIGINT UNSIGNED NOT NULL, INDEX(OwnerID), CONSTRAINT fk_APITokensOwnerID FOREIGN KEY (OwnerID) REFERENCES Users(ID) ON DELETE CASCADE, CreationTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, ExpireTime TIMESTAMP NULL DEFAULT NULL);")
 	if err != nil {
 		logging.WriteLog(logging.LogLevelCritical, "MariaDBPlugin/performFreshDBInstall", "*", logging.ResultFailure, []string{"Failed to install user table in database", err.Error()})
 		return err
@@ -218,7 +218,7 @@ func (DBConnection *MariaDBPlugin) upgradeDatabase(version int64) (int64, error)
 	}
 	if version == 2 {
 		//Tokens
-		_, err := DBConnection.DBHandle.Exec("CREATE TABLE APITokens (ID BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE, FriendlyID VARCHAR(255) NOT NULL UNIQUE, INDEX(FriendlyID), OwnerID BIGINT UNSIGNED NOT NULL, INDEX(OwnerID), CONSTRAINT fk_APITokensOwnerID FOREIGN KEY (OwnerID) REFERENCES Users(ID) ON DELETE CASCADE, CreationTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, ExpireTime TIMESTAMP);")
+		_, err := DBConnection.DBHandle.Exec("CREATE TABLE APITokens (ID BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE, FriendlyID VARCHAR(255) NOT NULL UNIQUE, INDEX(FriendlyID), OwnerID BIGINT UNSIGNED NOT NULL, INDEX(OwnerID), CONSTRAINT fk_APITokensOwnerID FOREIGN KEY (OwnerID) REFERENCES Users(ID) ON DELETE CASCADE, CreationTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, ExpireTime TIMESTAMP NULL DEFAULT NULL);")
 		if err != nil {
 			logging.WriteLog(logging.LogLevelCritical, "MariaDBPlugin/performFreshDBInstall", "*", logging.ResultFailure, []string{"Failed to install user table in database", err.Error()})
 			return version, err

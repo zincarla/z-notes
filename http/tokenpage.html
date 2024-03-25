@@ -1,0 +1,83 @@
+{{template "header.html" .}}
+	<body>
+		<script>
+			//https://stackoverflow.com/questions/2706125/javascript-function-to-add-x-months-to-a-date
+			//Some reason, i thought JS would have something built-in for this...
+			function addMonths(date, months) {
+				var d = date.getDate();
+				date.setMonth(date.getMonth() + +months);
+				if (date.getDate() != d) {
+					date.setDate(0);
+				}
+				return date;
+			}
+
+			// https://stackoverflow.com/questions/24468518/html5-input-datetime-local-default-value-of-today-and-current-time#51066673
+			// Also something I woulda expect JS to have an easy thing for, but no... apparently...
+			window.addEventListener("load", function() {
+				var now = addMonths(new Date(),1);
+				var utcString = now.toISOString().substring(0,19);
+				var year = now.getFullYear();
+				var month = now.getMonth() + 1;
+				var day = now.getDate();
+				var hour = now.getHours();
+				var minute = now.getMinutes();
+				var localDatetime = year + "-" +
+								(month < 10 ? "0" + month.toString() : month) + "-" +
+								(day < 10 ? "0" + day.toString() : day) + "T" +
+								(hour < 10 ? "0" + hour.toString() : hour) + ":" +
+								(minute < 10 ? "0" + minute.toString() : minute);
+				var datetimeField = document.getElementById("expireTimeDTL");
+				datetimeField.value = localDatetime
+			});
+		</script>
+		{{template "headMenu.html" .}}
+		<div id="BodyContent">
+			{{template "librarymenu.html" .}}
+			<div id="MainContentContainer">
+				<h2>Current Tokens</h2>
+				{{$CSRF := .CSRF}}
+				<table>
+					<tr>
+						<th>TokenID</th>
+						<th>Expires</th>
+						<th>Expiration Time</th>
+						<th>Actions</th>
+					</tr>
+					{{range .UserTokens}}
+					<tr>
+						<td>{{.FriendlyID}}</td>
+						<td><input type="checkbox" form="refresh{{.FriendlyID}}Form" name="expires" value="checked" {{if eq .Expires true}}checked{{end}}/></td>
+						<td><input type="datetime-local" form="refresh{{.FriendlyID}}Form" name="expireTime" min="1000-01-01T01:00"max="9999-12-31T23:59" value="{{.ExpirationTime.Format "2006-01-02T15:04"}}"/></td>
+						<td>
+							<form method="POST" id="refresh{{.FriendlyID}}Form">
+								{{$CSRF}}
+								<input type="hidden" name="tokenid" value="{{.FriendlyID}}">
+								<input type="hidden" name="action" value="refresh">
+								<input type="submit" value="Refresh">
+							</form>
+							<form method="POST" id="DeleteTokenForm">
+								{{$CSRF}}
+								<input type="hidden" name="tokenid" value="{{.FriendlyID}}">
+								<input type="hidden" name="action" value="delete">
+								<input type="submit" value="Remove">
+							</form>
+						</td>
+					</tr>
+					{{end}}					
+				</table>
+				<h2>Create Token</h2>
+				<form method="POST" id="CreateTokenForm">
+					{{.CSRF}}
+					<input type="hidden" name="action" value="create">
+					
+					<input type="checkbox" name="expires" value="checked"/><label>Expires</label>
+					<p class="explanationText">If set, this token will auto expire at the given date</p>
+
+					<input type="datetime-local" id="expireTimeDTL" name="expireTime" min="1000-01-01T01:00"max="9999-12-31T23:59" value="2024-01-01T01:00"/><label>Expiration Time</label>
+					<p class="explanationText">When combined with Expires, will automatically expire this token at the set time. This token must then either be fully recreated, or refreshed with new expiration settings.</p>
+					<input type="submit" value="Create">
+				</form>
+			</div>
+		</div>
+{{template "footer.html" .}}

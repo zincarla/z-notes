@@ -36,12 +36,12 @@ func (DBConnection *MariaDBPlugin) CreateToken(tokenInfo interfaces.APITokenInfo
 	//Add to db
 	var resultInfo sql.Result
 	if tokenInfo.Expires {
-		resultInfo, err = DBConnection.DBHandle.Exec("INSERT INTO APITokens (OwnerID, FriendlyID, ExpirationTime) VALUES (?, ?, ?);", tokenInfo.OwnerID, FriendlyID, tokenInfo.ExpirationTime)
+		resultInfo, err = DBConnection.DBHandle.Exec("INSERT INTO APITokens (OwnerID, FriendlyID, ExpireTime) VALUES (?, ?, ?);", tokenInfo.OwnerID, FriendlyID, tokenInfo.ExpirationTime)
 		if err != nil {
 			return tokenInfo, err
 		}
 	} else {
-		resultInfo, err = DBConnection.DBHandle.Exec("INSERT INTO APITokens (OwnerID, FriendlyID) VALUES (?, ?);", tokenInfo.OwnerID, FriendlyID)
+		resultInfo, err = DBConnection.DBHandle.Exec("INSERT INTO APITokens (OwnerID, FriendlyID, ExpireTime) VALUES (?, ?, NULL);", tokenInfo.OwnerID, FriendlyID)
 		if err != nil {
 			return tokenInfo, err
 		}
@@ -58,7 +58,7 @@ func (DBConnection *MariaDBPlugin) CreateToken(tokenInfo interfaces.APITokenInfo
 func (DBConnection *MariaDBPlugin) GetToken(tokenID string) (interfaces.APITokenInformation, error) {
 	var tokenInfo interfaces.APITokenInformation
 	//Prefer DBID
-	query := "SELECT ID, OwnerID, CreationTime, ExpirationTime FROM APITokens WHERE FriendlyID=?"
+	query := "SELECT ID, OwnerID, CreationTime, ExpireTime FROM APITokens WHERE FriendlyID=?"
 	var NCreationTime mysql.NullTime
 	var NExpirationTime mysql.NullTime
 	err := DBConnection.DBHandle.QueryRow(query, tokenID).Scan(&tokenInfo.ID, &tokenInfo.OwnerID, &NCreationTime, &NExpirationTime)
@@ -79,7 +79,7 @@ func (DBConnection *MariaDBPlugin) GetToken(tokenID string) (interfaces.APIToken
 //GetTokens returns a slice of tokens based on UserID
 func (DBConnection *MariaDBPlugin) GetTokens(userID uint64) ([]interfaces.APITokenInformation, error) {
 	var tokenInfo []interfaces.APITokenInformation
-	query := "SELECT ID, FriendlyID, CreationTime, ExpirationTime FROM APITokens WHERE OwnerID=?"
+	query := "SELECT ID, FriendlyID, CreationTime, ExpireTime FROM APITokens WHERE OwnerID=?"
 
 	rows, err := DBConnection.DBHandle.Query(query, userID)
 	if err != nil {
@@ -118,7 +118,7 @@ func (DBConnection *MariaDBPlugin) RefreshToken(tokenInfo interfaces.APITokenInf
 		return tokenInfo, err
 	}
 
-	query := "UPDATE APITokens SET FriendlyID=?, ExpirationTime=? WHERE FriendlyID=?"
+	query := "UPDATE APITokens SET FriendlyID=?, ExpireTime=? WHERE FriendlyID=?"
 	var NExpirationTime sql.NullTime
 	if tokenInfo.Expires {
 		NExpirationTime = sql.NullTime{Time: tokenInfo.ExpirationTime, Valid: true}
@@ -127,4 +127,11 @@ func (DBConnection *MariaDBPlugin) RefreshToken(tokenInfo interfaces.APITokenInf
 
 	tokenInfo.FriendlyID = FriendlyID
 	return tokenInfo, err
+}
+
+//RemoveToken deletes a token from the database
+func (DBConnection *MariaDBPlugin) RemoveToken(tokenFriendlyID string) error {
+	query := "DELETE FROM APITokens WHERE FriendlyID=?"
+	_, err := DBConnection.DBHandle.Exec(query, tokenFriendlyID)
+	return err
 }
