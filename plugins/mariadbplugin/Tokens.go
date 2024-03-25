@@ -76,6 +76,28 @@ func (DBConnection *MariaDBPlugin) GetToken(tokenID string) (interfaces.APIToken
 	return tokenInfo, nil
 }
 
+//GetTokenByID returns a token based on ID
+func (DBConnection *MariaDBPlugin) GetTokenByID(tokenID uint64) (interfaces.APITokenInformation, error) {
+	var tokenInfo interfaces.APITokenInformation
+	//Prefer DBID
+	query := "SELECT FriendlyID, OwnerID, CreationTime, ExpireTime FROM APITokens WHERE ID=?"
+	var NCreationTime mysql.NullTime
+	var NExpirationTime mysql.NullTime
+	err := DBConnection.DBHandle.QueryRow(query, tokenID).Scan(&tokenInfo.FriendlyID, &tokenInfo.OwnerID, &NCreationTime, &NExpirationTime)
+	if err != nil {
+		return tokenInfo, err
+	}
+	if NCreationTime.Valid {
+		tokenInfo.CreationTime = NCreationTime.Time
+	}
+	if NExpirationTime.Valid {
+		tokenInfo.ExpirationTime = NExpirationTime.Time
+		tokenInfo.Expires = true
+	}
+	tokenInfo.ID = tokenID
+	return tokenInfo, nil
+}
+
 //GetTokens returns a slice of tokens based on UserID
 func (DBConnection *MariaDBPlugin) GetTokens(userID uint64) ([]interfaces.APITokenInformation, error) {
 	var tokenInfo []interfaces.APITokenInformation

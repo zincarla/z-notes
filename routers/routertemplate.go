@@ -33,8 +33,9 @@ type templateInput struct {
 	UserInformation       interfaces.UserInformation
 	PageResources         []string
 
-	PagePermissions []interfaces.UserPageAccess
-	UserTokens      []interfaces.APITokenInformation
+	PagePermissions      []interfaces.UserPageAccess
+	PageTokenPermissions []interfaces.TokenPageAccess
+	UserTokens           []interfaces.APITokenInformation
 
 	//RequestStart is start time for a user request
 	RequestStart time.Time

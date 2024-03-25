@@ -4,9 +4,9 @@
 		<div id="BodyContent">
 			{{template "librarymenu.html" .}}
 			<div id="MainContentContainer">
+				{{$CSRF := .CSRF}}
 				{{if .PagePermissions}}
 				<h2>Current Permissions</h2>
-				{{$CSRF := .CSRF}}
 				<table>
 					<tr>
 						<th>Name</th>
@@ -30,9 +30,54 @@
 				{{end}}
 				<h2>Add/Edit Permissions</h2>
 				<form method="POST" id="EditSecurityForm" action="./security/add">
-					{{.CSRF}}
+					{{$CSRF}}
 					<input type="text" name="UserName" placeholder="Enter a username in the form of username#descriminator" value="" required>
 					<p class="explanationText">The user for which you are adding or editing permissions. Any permissions already granted to this user will be overwritten. Use anonymous#2 to grant access to unauthenticated users, and authenticated#3 for all logged in users.</p>
+					<input type="checkbox" name="Read" value="checked"/><label>Read</label>
+					<p class="explanationText">Allows one to read a page.</p>
+					<input type="checkbox" name="Write" value="checked"/><label>Write</label>
+					<p class="explanationText">Allows one to modify the contents of a page, upload files, rename a page, and move a page.</p>
+					<input type="checkbox" name="Delete" value="checked"/><label>Delete</label>
+					<p class="explanationText">Allows one to delete this page.</p>
+					<input type="checkbox" name="Audit" value="checked"/><label>Audit</label>
+					<p class="explanationText">Allows one to view the change-history of a page.</p>
+					<input type="checkbox" name="Moderate" value="checked"/><label>Moderate</label>
+					<p class="explanationText">Allows one to manage the permissions on this page.</p>
+					<br>
+					<input type="checkbox" name="Deny" value="checked"/><label>Deny</label>
+					<p class="explanationText">Combined with the other options to create a denial rule. For example, Deny+Write, will explicitly deny the permission to write to this page. Combine with the inherit down checkbox to expand that denial to child pages.</p>
+					<input type="checkbox" name="Inherits" value="checked"/><label>Inherit Down</label>
+					<p class="explanationText">Inherits this rule down to child pages. If not checked, this rule only applies to this page alone.</p>
+					<input type="submit" value="Update">
+				</form>
+				{{if .PageTokenPermissions}}
+				<h2>Current API Permissions</h2>
+				<table>
+					<tr>
+						<th>TokenID</th>
+						<th>Permissions</th>
+						<th>Remove Permission</th>
+					</tr>
+					{{range .PageTokenPermissions}}
+					<tr>
+						<td>{{.Token.FriendlyID}}</td>
+						<td>{{.Access.String}}</td>
+						<td>
+							<form method="POST" id="EditSecurityForm" action="./security/deleteToken">
+								{{$CSRF}}
+								<input type="hidden" name="TokenAccessID" value="{{.ID}}">
+								<input type="submit" value="Remove">
+							</form>
+						</td>
+					</tr>
+					{{end}}
+				</table>
+				{{end}}	
+				<h2>Add/Edit API Permissions</h2>
+				<form method="POST" id="EditSecurityForm" action="./security/addToken">
+					{{$CSRF}}
+					<input type="text" name="TokenID" placeholder="Enter a token ID" value="" required>
+					<p class="explanationText">The token for which you are adding or editing permissions. Any permissions already granted to this token will be overwritten.</p>
 					<input type="checkbox" name="Read" value="checked"/><label>Read</label>
 					<p class="explanationText">Allows one to read a page.</p>
 					<input type="checkbox" name="Write" value="checked"/><label>Write</label>

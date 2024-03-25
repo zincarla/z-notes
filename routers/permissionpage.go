@@ -70,6 +70,26 @@ func SecurityPageGetRouter(responseWriter http.ResponseWriter, request *http.Req
 		TemplateInput.PagePermissions = permissions
 	}
 
+	//Get token permissions
+	tokenPermissions, err := database.DBInterface.GetTokenPermissions(PageID)
+	if err != nil {
+		logging.WriteLog(logging.LogLevelWarning, "permissionpage/SecurityPageGetRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Failed to get page token permissions", err.Error()})
+		TemplateInput.HTMLMessage = template.HTML("Failed to get page token permissions, internal error occured.")
+	} else {
+		//By default, permissions only has the DBID of the users, for UI, we need the usernames too
+		for index := range tokenPermissions {
+			completedToken, err := database.DBInterface.GetTokenByID(tokenPermissions[index].Token.ID)
+			if err != nil {
+				TemplateInput.HTMLMessage = template.HTML("Failed to get all token info.")
+				logging.WriteLog(logging.LogLevelWarning, "permissionpage/SecurityPageGetRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Failed to get tokens for page permissions", err.Error()})
+				tokenPermissions[index].Token.FriendlyID = "FailedToken#" + strconv.FormatUint(tokenPermissions[index].Token.ID, 10)
+			} else {
+				tokenPermissions[index].Token = completedToken
+			}
+		}
+		TemplateInput.PageTokenPermissions = tokenPermissions
+	}
+
 	//Reply with edit form
 	replyWithTemplate("editsecurity.html", TemplateInput, responseWriter, request)
 }

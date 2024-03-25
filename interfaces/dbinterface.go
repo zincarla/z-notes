@@ -53,6 +53,8 @@ type DBInterface interface {
 	CreateToken(tokenInfo APITokenInformation) (APITokenInformation, error)
 	//GetToken returns a token based on FriendlyID
 	GetToken(tokenID string) (APITokenInformation, error)
+	//GetTokenByID returns a token based on ID
+	GetTokenByID(tokenID uint64) (APITokenInformation, error)
 	//GetTokens returns a slice of tokens based on UserID
 	GetTokens(userID uint64) ([]APITokenInformation, error)
 	//RefreshToken refreshes a token by crating a new tokenFriendlyID returns the new tokenFriendlyID, and/or an error
