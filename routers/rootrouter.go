@@ -1,30 +1,17 @@
 package routers
 
 import (
-	"html/template"
 	"net/http"
 	"path"
 	"path/filepath"
 	"z-notes/config"
-	"z-notes/database"
 	"z-notes/logging"
 )
 
 //RootRouter serves requests to the root (/)
 func RootRouter(responseWriter http.ResponseWriter, request *http.Request) {
 	TemplateInput := getNewTemplateInput(responseWriter, request)
-	if TemplateInput.IsLoggedOn() {
-		//Get menu root for logged on user
-		//Grab root pages so that the menu may be constructed in template
-		roots, err := database.DBInterface.GetRootPages(TemplateInput.UserInformation.DBID)
-		if err != nil {
-			logging.WriteLog(logging.LogLevelWarning, "pagerouter/PageRouter", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Failed to get root pages", err.Error()})
-			TemplateInput.HTMLMessage = template.HTML("Failed to get root pages, internal error occured.")
-		} else {
-			TemplateInput.PageData.Children = roots
-		}
-		TemplateInput.BreadCrumbRoot = TemplateInput.PageData
-	}
+	FillLibraryWithRoot(&TemplateInput)
 	replyWithTemplate("index.html", TemplateInput, responseWriter, request)
 }
 

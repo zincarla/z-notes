@@ -98,3 +98,18 @@ func FillTemplatePageData(PageID uint64, TemplateInput *templateInput) error {
 
 	return nil
 }
+
+//FillLibraryWithRoot filles in the library menu from root
+func FillLibraryWithRoot(TemplateInput *templateInput) {
+	if TemplateInput.IsLoggedOn() {
+		//Get menu root for logged on user
+		//Grab root pages so that the menu may be constructed in template
+		roots, err := database.DBInterface.GetRootPages(TemplateInput.UserInformation.DBID)
+		if err != nil {
+			logging.WriteLog(logging.LogLevelWarning, "templatefiller/FillLibraryWithRoot", TemplateInput.UserInformation.GetCompositeID(), logging.ResultFailure, []string{"Failed to get root pages", err.Error()})
+		} else {
+			TemplateInput.PageData.Children = roots
+		}
+		TemplateInput.BreadCrumbRoot = TemplateInput.PageData
+	}
+}
