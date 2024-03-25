@@ -2,10 +2,12 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"net"
 	"net/http"
 	"time"
 	"z-notes/config"
+	"z-notes/database"
 	"z-notes/interfaces"
 	"z-notes/logging"
 
@@ -37,7 +39,8 @@ type GenericResponse struct {
 type APIData struct {
 	Version string
 
-	UserInformation interfaces.UserInformation
+	UserInformation  interfaces.UserInformation
+	TokenInformation interfaces.APITokenInformation
 
 	//RequestStart is start time for a user request
 	RequestStart time.Time
@@ -47,7 +50,22 @@ type APIData struct {
 
 //IsLoggedOn returns whether the user is to be treated as logged in
 func (ti APIData) IsLoggedOn() bool {
-	return ti.UserInformation.OIDCSubject != "" && ti.UserInformation.OIDCIssuer != ""
+	return (ti.IsLoggedOnUser() || ti.IsLoggedOnToken())
+}
+
+//IsLoggedOnToken returns whether the APIData is auth'd by token
+func (ti APIData) IsLoggedOnToken() bool {
+	return (ti.TokenInformation.ID != 0 && ti.TokenInformation.OwnerID != 0 && (ti.TokenInformation.ExpirationTime.After(time.Now())))
+}
+
+//IsLoggedOnUser returns whether the APIData is to be treated as logged in by user account
+func (ti APIData) IsLoggedOnUser() bool {
+	return (ti.UserInformation.OIDCSubject != "" && ti.UserInformation.OIDCIssuer != "")
+}
+
+//GetCompositeID returns an ID for the APIData, generally for logging
+func (ti APIData) GetCompositeID() string {
+	return "Token: " + ti.TokenInformation.GetCompositeID() + " User: " + ti.UserInformation.GetCompositeID()
 }
 
 //ReplyWithJSON replies to a request with the specified interface to be marshaled to a JOSN object
@@ -108,8 +126,21 @@ func GetAPIData(responseWriter http.ResponseWriter, request *http.Request) APIDa
 		}
 	}
 
-	//TODO: Add API method of session validation. Current works for request from in-browser, but not so much from 3rd part integration
-	//JWT?
+	//If no valid session cookie, check for API key
+	if !NewData.IsLoggedOn() {
+		if apiKey := request.Header.Get("x-api-key"); apiKey != "" {
+			//Validate API key
+			tokenInfo, err := database.DBInterface.GetToken(apiKey)
+			if err != nil {
+				logging.WriteLog(logging.LogLevelError, "apiroot/GetAPIData", "", logging.ResultFailure, []string{"error getting api token", apiKey, err.Error()})
+			} else {
+				if tokenInfo.Expires && tokenInfo.ExpirationTime.After(time.Now()) {
+					NewData.TokenInformation = tokenInfo
+					NewData.UserInformation = interfaces.UserInformation{}
+				} //Otherwise, token has expired
+			}
+		}
+	}
 
 	//Add IP to user info
 	NewData.UserInformation.IP, _, err = net.SplitHostPort(request.RemoteAddr)
@@ -118,4 +149,25 @@ func GetAPIData(responseWriter http.ResponseWriter, request *http.Request) APIDa
 	}
 
 	return NewData
+}
+
+//GetAPIDataAccess returns an access for a given APIData, access
+func GetAPIDataAccess(apiData APIData, PageID uint64) (interfaces.PageAccessControl, error) {
+	var ToReturn interfaces.PageAccessControl
+	if apiData.IsLoggedOnUser() {
+		pageAccess, err := database.DBInterface.GetEffectivePermission(interfaces.UserPageAccess{User: apiData.UserInformation, PageID: PageID})
+		if err != nil {
+			return ToReturn, err
+		}
+		ToReturn = pageAccess.Access
+	} else if apiData.IsLoggedOnToken() {
+		pageAccess, err := database.DBInterface.GetEffectiveTokenPermission(interfaces.TokenPageAccess{Token: apiData.TokenInformation, PageID: PageID})
+		if err != nil {
+			return ToReturn, err
+		}
+		ToReturn = pageAccess.Access
+	} else {
+		return ToReturn, errors.New("apiData is not logged in")
+	}
+	return ToReturn, nil
 }
