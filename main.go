@@ -136,6 +136,7 @@ func main() {
 		WriteTimeout:   config.Configuration.WriteTimeout,
 		MaxHeaderBytes: config.Configuration.MaxHeaderBytes,
 	}
+
 	//Serve requests. Log on failure.
 	logging.WriteLog(logging.LogLevelInfo, "main/Main", "*", logging.ResultSuccess, []string{"Server now listening"})
 	if config.Configuration.UseTLS == false || configConfirmed == false {

@@ -58,17 +58,16 @@ type DBInterface interface {
 	//RefreshToken refreshes a token by crating a new tokenFriendlyID returns the new tokenFriendlyID, and/or an error
 	RefreshToken(tokenInfo APITokenInformation) (APITokenInformation, error)
 	////TokenPermissions
-	/*
-		//UpdateTokenPermission creates or updates a pagepermission for tokens
-		UpdateTokenPermission(permission TokenPageAccess) error
-		//RemoveTokenPermission removes a PagePermission for a token (error nil on success)
-		RemoveTokenPermission(permissionID uint64) error
-		//GetTokenPermissions returns the token permissions assigned directly to a page with the given id
-		GetTokenPermissions(pageID uint64) ([]TokenPageAccess, error)
-		//GetTokenPermission returns the token permission assigned directly to a page
-		GetTokenPermission(pageAccess UserPageAccess) (TokenPageAccess, error)
-		//GetEffectiveTokenPermission returns the effective permissions for a token on a page, this takes into account inherited permissions
-		GetEffectiveTokenPermission(pageAccess TokenPageAccess) (TokenPageAccess, error)*/
+	//UpdateTokenPermission creates or updates a pagepermission for tokens
+	UpdateTokenPermission(permission TokenPageAccess) error
+	//RemoveTokenPermission removes a PagePermission for a token (error nil on success)
+	RemoveTokenPermission(permissionID uint64) error
+	//GetTokenPermissions returns the token permissions assigned directly to a page with the given id
+	GetTokenPermissions(pageID uint64) ([]TokenPageAccess, error)
+	//GetTokenPermission returns the token permission assigned directly to a page
+	GetTokenPermission(pageAccess UserPageAccess) (TokenPageAccess, error)
+	//GetEffectiveTokenPermission returns the effective permissions for a token on a page, this takes into account inherited permissions
+	GetEffectiveTokenPermission(pageAccess TokenPageAccess) (TokenPageAccess, error)
 
 	//Maitenance
 	//InitDatabase connects to a database, and if needed, creates and or updates tables
