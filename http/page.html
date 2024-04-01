@@ -3,6 +3,65 @@
 		{{template "headMenu.html" .}}
 		<div id="BodyContent">
 			{{template "librarymenu.html" .}}
+			<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+			<script>
+				function ConvertTables() {
+					//Grab all tables
+					let tables = [].slice.call(document.getElementsByTagName("table")); //Stupid javascript changing my in-use array lengths.
+					//Loop through them all
+					for (let i=0; i<tables.length;i++) {
+						console.log("parsing table "+i.toString()+"of total"+tables.length.toString())
+						var table = tables[i];
+						//Find tables that meet requirements
+						if (table.rows.length !== 2 || table.rows[0].cells[0].innerText.startsWith("tojslinechart") === false) {
+							continue //Skip
+						}
+						//Cache labels
+						let labels = [];
+						for (let li=0;li<table.rows[0].cells.length;li++) {
+							labels.push(table.rows[0].cells[li].innerText);
+						}
+						labels[0] = labels[0].substring(13);
+
+						//Cache Data
+						let data = [];
+						for (let li=0;li<table.rows[1].cells.length;li++) {
+							data.push(parseInt(table.rows[1].cells[li].innerText,10));
+						}
+
+						//Build canvas hierarchy
+						let newCanvasContainer = document.createElement("div");
+						newCanvasContainer.style.height = "30vh";
+						newCanvasContainer.style.position = "relative";
+						let newCanvas = document.createElement("canvas");
+						newCanvasContainer.appendChild(newCanvas);
+						//Call upon chartjs to do it's stuff
+						new Chart(newCanvas, {
+							type: 'line',
+							data: {
+							labels: labels,
+							datasets: [{
+								label: 'Value',
+								data: data,
+								borderWidth: 1
+							}]
+							},
+							options: {
+								responsive : true,
+								scales: {
+									y: {
+										beginAtZero: true
+									}
+								}
+							}
+						});
+
+						//And update the DOM
+						table.parentElement.replaceChild(newCanvasContainer,table);
+					}
+				}
+				document.addEventListener('DOMContentLoaded', ConvertTables, false);
+			</script>
 			<div id="MainContentContainer">
 				{{.PageContent}}
 			</div>
