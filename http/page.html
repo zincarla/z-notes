@@ -10,7 +10,6 @@
 					let tables = [].slice.call(document.getElementsByTagName("table")); //Stupid javascript changing my in-use array lengths.
 					//Loop through them all
 					for (let i=0; i<tables.length;i++) {
-						console.log("parsing table "+i.toString()+"of total"+tables.length.toString())
 						var table = tables[i];
 						//Find tables that meet requirements
 						if (table.rows.length !== 2 || table.rows[0].cells[0].innerText.startsWith("tojslinechart") === false) {
@@ -43,14 +42,34 @@
 							datasets: [{
 								label: 'Value',
 								data: data,
-								borderWidth: 1
+								borderWidth: 1,
+								borderColor: (getComputedStyle(document.body).getPropertyValue('--primary-color')),
+								backgroundColor: (getComputedStyle(document.body).getPropertyValue('--primary-color'))
 							}]
 							},
 							options: {
+								fill: true,
+								pointStyle: false,
 								responsive : true,
 								scales: {
 									y: {
-										beginAtZero: true
+										beginAtZero: true,
+										ticks: {
+											color: (getComputedStyle(document.body).getPropertyValue('--textcolor'))
+										},
+										grid: {
+											tickColor: (getComputedStyle(document.body).getPropertyValue('--border-color')),
+											color: (getComputedStyle(document.body).getPropertyValue('--side-search-color'))
+										}
+									},
+									x: {
+										ticks: {
+											color: (getComputedStyle(document.body).getPropertyValue('--textcolor'))
+										},
+										grid: {
+											tickColor: (getComputedStyle(document.body).getPropertyValue('--border-color')),
+											color: (getComputedStyle(document.body).getPropertyValue('--side-search-color'))
+										}
 									}
 								}
 							}
