@@ -81,6 +81,38 @@ When you run Z-Notes for the first time, the application will generate a new con
 | OpenIDLogonExpireTime | 1209600 | The time to automatically expire OpenID tokens in seconds. |
 | TargetLogLevel | 0 | Sets the verbosity of the log. |
 | MaxQueryResults | 20 | Maximum results to return when querying notes |
+| InSecureCSRF | false | Disables protections for CSRF, do not use in production environments |
+
+### API
+
+You can now generate API tokens when logged in under Profile > Manage API Tokens. API Tokens follow a similar permission structure as users. By default, new tokens have no permissions to anything. You must grant permissions to the token to your notes under the notes security page. Tokens can be set to optionally expire and can be manually refreshed. Refreshing a token changes it's ID which will require updating your scripts, but does not change it's pre-established permissions. API requires CSRF compliance currently and so the API requires a session.
+
+#### API Example in PowerShell
+
+```powershell
+$APIURLBase = "https://znotes.mywebpage.com"
+$PageIDToChange = 200 # Can be pulled from a page's URL
+$APIToken = "asdf" # Replace with Token ID, keep secret
+
+#Get CSRF and start session to save gorilla CSRF cookie
+$Response = Invoke-WebRequest -Method Get -Uri "$APIURLBase/api" -SessionVariable "znsession" -ContentType "application/json"
+if ($Response.StatusCode -ne 200) {
+    Write-Error "Failed to get csrf for logon ($($Response.StatusCode))"
+    return
+}
+#Set csrf and API tokens
+$CSRFToken = $Response.Headers["X-CSRF-Token"]
+$znsession.Headers.Add("X-CSRF-Token", $CSRFToken) #Without token, you will get CSRF errors
+$znsession.Headers.Add("x-api-key", $APIToken) #API Token
+
+# Get-NoteData
+$OLDData = Invoke-RestMethod -Method Get -Uri "$APIURLBase/api/notes/$PageIDToChange" -WebSession $znsession
+
+$NewContent = $OldData.Data.Content + "`r`n`r`nThis is a change added by API!"
+
+# Submit change
+Invoke-RestMethod -Method Post -Uri "$APIURLBase/api/notes/$PageIDToChange" -WebSession $znsession -Body (ConvertTo-Json -InputObject @{Name=$OLDData.Data.Name; Content=$NewContent})
+```
 
 ## About files
 
