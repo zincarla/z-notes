@@ -13,8 +13,9 @@
   --headmenu-shadowcolor: black;
   --headmenu-seperatorcolor: black;
   --navihover-color: #70D886;
-  --confirmbg-color: rgba(0, 0, 0, 0.541);
+  --confirmbg-color: rgba(0, 0, 0, 0.9);
 
   --footertext-color: white;
   --footerbg-color: lightgray;
+  --warntextcolor: red;
 }

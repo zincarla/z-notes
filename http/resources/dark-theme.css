@@ -13,9 +13,10 @@
   --headmenu-shadowcolor: #153185;
   --headmenu-seperatorcolor: rgb(255, 225, 142);
   --navihover-color: #112663;
-  --confirmbg-color: rgba(0, 0, 0, 0.541);
+  --confirmbg-color: rgba(0, 0, 0, 0.9);
 
   --footertext-color: rgb(255, 225, 142);
   --footerbg-color: black;
+  --warntextcolor: red;
 }
 

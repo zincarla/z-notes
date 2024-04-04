@@ -233,11 +233,12 @@ ul {
 .confirmContainer {
 	width: 100vw;
 	height: 100vh;
-	background-color: var(--confirmbg-color, rgba(0, 0, 0, 0.541));
+	background-color: var(--confirmbg-color, rgba(0, 0, 0, 0.9));
 	position: fixed;
 	top:0px;
 	left: 0px;
 	z-index: 1;
+	color: var(--warntextcolor, red);
 }
 
 .confirmCard {
@@ -246,6 +247,9 @@ ul {
 	height: 10em;
 	width: 20em;
 	margin: 0px auto;
+	background-color: var(--confirmbg-color, rgba(0, 0, 0, 0.9));
+	border-radius: 10px;
+	padding: 1em;
 }
 
 p.explanationText {
