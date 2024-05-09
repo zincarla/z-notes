@@ -421,6 +421,10 @@ video, audio {
 	margin: 0em;
 }
 
+pre {
+	overflow: scroll; /*Messes with mobile pages*/
+}
+
 /*Cell phone selector*/
 @media (max-device-width: 536px), (max-width: 536px) {
 	#WelcomeContainer {
@@ -438,14 +442,16 @@ video, audio {
 	}
 	#HeadMenu {
 		height: auto;
+		font-size: 1.5em; /*Cell phone click-ability help*/
 	}
 	#SideMenu {
 		display: block;
 		width: 100%;
 		flex: none;
+		font-size: 1.5em; /*Cell phone click-ability help*/
 	}
 	body {
-		font-size: 40px;  
+		font-size: 50px;  
 	}
 	.cellDefaultHidden {
 		display:none !important;
@@ -453,8 +459,8 @@ video, audio {
 	#CellMenuButton {
 		display: block;
 		padding: .1em;
-		width: 1.8em;
-		height: 1.8em;
+		width: 2em;
+		height: 2em;
 		text-align: center;
 	}
 	video, audio {
