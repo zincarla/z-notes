@@ -139,7 +139,11 @@ function SetPageTheme(index) {
 }
 
 function LoadPageTheme() {
-    SetPageTheme(parseInt(localStorage.getItem('pagetheme')));
+    if (localStorage.getItem('pagetheme') === null) {
+        SetPageTheme(0); //Default to light-theme
+    } else {
+        SetPageTheme(parseInt(localStorage.getItem('pagetheme')));
+    }
 }
 
 LoadPageTheme();
